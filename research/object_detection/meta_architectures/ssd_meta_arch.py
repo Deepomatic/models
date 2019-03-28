@@ -285,7 +285,8 @@ class SSDMetaArch(model.DetectionModel):
                expected_loss_weights_fn=None,
                use_confidences_as_targets=False,
                implicit_example_weight=0.5,
-               equalization_loss_config=None):
+               equalization_loss_config=None,
+               **kwargs):
     """SSDMetaArch Constructor.
 
     TODO(rathodv,jonathanhuang): group NMS parameters + score converter into
@@ -361,8 +362,9 @@ class SSDMetaArch(model.DetectionModel):
         for the implicit negative examples.
       equalization_loss_config: a namedtuple that specifies configs for
         computing equalization loss.
+      **kwargs: Those arguments will be passed to object_detection.core.DetectionModel
     """
-    super(SSDMetaArch, self).__init__(num_classes=box_predictor.num_classes)
+    super(SSDMetaArch, self).__init__(num_classes=box_predictor.num_classes, **kwargs)
     self._is_training = is_training
     self._freeze_batchnorm = freeze_batchnorm
     self._inplace_batchnorm_update = inplace_batchnorm_update
@@ -680,6 +682,7 @@ class SSDMetaArch(model.DetectionModel):
       detection_boxes, detection_keypoints = self._batch_decode(box_encodings)
       detection_boxes = tf.identity(detection_boxes, 'raw_box_locations')
       detection_boxes = tf.expand_dims(detection_boxes, axis=2)
+      detection_masks = prediction_dict.get('mask_predictions')
 
       detection_scores = self._score_conversion_fn(class_predictions)
       detection_scores = tf.identity(detection_scores, 'raw_box_scores')
@@ -697,6 +700,17 @@ class SSDMetaArch(model.DetectionModel):
         box_features = tf.concat(feature_map_list, 1)
         box_features = tf.identity(box_features, 'raw_box_features')
 
+      if not self._apply_final_nms:
+        detection_dict = {
+          fields.DetectionResultFields.detection_boxes: tf.squeeze(detection_boxes, axis=2),
+          fields.DetectionResultFields.detection_scores: class_predictions
+        }
+        if detection_keypoints is not None:
+          detection_dict[fields.DetectionResultFields.detection_keypoints] = detection_keypoints
+        if detection_masks is not None:
+          detection_dict[fields.DetectionResultFields.detection_masks] = detection_masks
+        return detection_dict
+
       if detection_keypoints is not None:
         additional_fields = {
             fields.BoxListFields.keypoints: detection_keypoints}
@@ -707,7 +721,7 @@ class SSDMetaArch(model.DetectionModel):
            clip_window=self._compute_clip_window(preprocessed_images,
                                                  true_image_shapes),
            additional_fields=additional_fields,
-           masks=prediction_dict.get('mask_predictions'))
+           masks=detection_masks)
       detection_dict = {
           fields.DetectionResultFields.detection_boxes:
               nmsed_boxes,
@@ -717,10 +731,6 @@ class SSDMetaArch(model.DetectionModel):
               nmsed_classes,
           fields.DetectionResultFields.num_detections:
               tf.to_float(num_detections),
-          fields.DetectionResultFields.raw_detection_boxes:
-              tf.squeeze(detection_boxes, axis=2),
-          fields.DetectionResultFields.raw_detection_scores:
-              class_predictions
       }
       if (nmsed_additional_fields is not None and
           fields.BoxListFields.keypoints in nmsed_additional_fields):
