@@ -81,7 +81,8 @@ class RFCNMetaArch(faster_rcnn_meta_arch.FasterRCNNMetaArch):
                add_summaries=True,
                clip_anchors_to_image=False,
                use_static_shapes=False,
-               resize_masks=False):
+               resize_masks=False,
+               **kwargs):
     """RFCNMetaArch Constructor.
 
     Args:
@@ -180,6 +181,7 @@ class RFCNMetaArch(faster_rcnn_meta_arch.FasterRCNNMetaArch):
         guarantees.
       resize_masks: Indicates whether the masks presend in the groundtruth
         should be resized in the model with `image_resizer_fn`
+      **kwargs: Those arguments will be passed to object_detection.core.DetectionModel
 
     Raises:
       ValueError: If `second_stage_batch_size` > `first_stage_max_proposals`
@@ -225,7 +227,8 @@ class RFCNMetaArch(faster_rcnn_meta_arch.FasterRCNNMetaArch):
         add_summaries,
         clip_anchors_to_image,
         use_static_shapes,
-        resize_masks)
+        resize_masks,
+        **kwargs)
 
     self._rfcn_box_predictor = second_stage_rfcn_box_predictor
 

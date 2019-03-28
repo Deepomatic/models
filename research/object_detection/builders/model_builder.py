@@ -100,7 +100,7 @@ FASTER_RCNN_FEATURE_EXTRACTOR_CLASS_MAP = {
 }
 
 
-def build(model_config, is_training, add_summaries=True):
+def build(model_config, is_training, add_summaries=True, **kwargs):
   """Builds a DetectionModel based on the model config.
 
   Args:
@@ -108,6 +108,7 @@ def build(model_config, is_training, add_summaries=True):
       DetectionModel.
     is_training: True if this model is being built for training purposes.
     add_summaries: Whether to add tensorflow summaries in the model graph.
+    **kwargs: Those arguments will be passed to object_detection.core.DetectionModel
   Returns:
     DetectionModel based on the config.
 
@@ -118,10 +119,10 @@ def build(model_config, is_training, add_summaries=True):
     raise ValueError('model_config not of type model_pb2.DetectionModel.')
   meta_architecture = model_config.WhichOneof('model')
   if meta_architecture == 'ssd':
-    return _build_ssd_model(model_config.ssd, is_training, add_summaries)
+    return _build_ssd_model(model_config.ssd, is_training, add_summaries, **kwargs)
   if meta_architecture == 'faster_rcnn':
     return _build_faster_rcnn_model(model_config.faster_rcnn, is_training,
-                                    add_summaries)
+                                    add_summaries, **kwargs)
   raise ValueError('Unknown meta architecture: {}'.format(meta_architecture))
 
 
@@ -220,7 +221,7 @@ def _build_ssd_feature_extractor(feature_extractor_config,
   return feature_extractor_class(**kwargs)
 
 
-def _build_ssd_model(ssd_config, is_training, add_summaries):
+def _build_ssd_model(ssd_config, is_training, add_summaries, **kwargs):
   """Builds an SSD detection model based on the model config.
 
   Args:
@@ -228,6 +229,7 @@ def _build_ssd_model(ssd_config, is_training, add_summaries):
       SSDMetaArch.
     is_training: True if this model is being built for training purposes.
     add_summaries: Whether to add tf summaries in the model.
+    **kwargs: Those arguments will be passed to object_detection.core.DetectionModel
   Returns:
     SSDMetaArch based on the config.
 
@@ -286,7 +288,6 @@ def _build_ssd_model(ssd_config, is_training, add_summaries):
       negative_class_weight=negative_class_weight)
 
   ssd_meta_arch_fn = ssd_meta_arch.SSDMetaArch
-  kwargs = {}
 
   return ssd_meta_arch_fn(
       is_training=is_training,
@@ -358,7 +359,7 @@ def _build_faster_rcnn_feature_extractor(
       batch_norm_trainable, reuse_weights)
 
 
-def _build_faster_rcnn_model(frcnn_config, is_training, add_summaries):
+def _build_faster_rcnn_model(frcnn_config, is_training, add_summaries, **kwargs):
   """Builds a Faster R-CNN or R-FCN detection model based on the model config.
 
   Builds R-FCN model if the second_stage_box_predictor in the config is of type
@@ -369,6 +370,7 @@ def _build_faster_rcnn_model(frcnn_config, is_training, add_summaries):
       desired FasterRCNNMetaArch or RFCNMetaArch.
     is_training: True if this model is being built for training purposes.
     add_summaries: Whether to add tf summaries in the model.
+    **kwargs: Those arguments will be passed to object_detection.core.DetectionModel
 
   Returns:
     FasterRCNNMetaArch based on the config.
@@ -506,6 +508,10 @@ def _build_faster_rcnn_model(frcnn_config, is_training, add_summaries):
       'use_static_shapes': use_static_shapes,
       'resize_masks': frcnn_config.resize_masks
   }
+
+  if len(kwargs.keys() & common_kwargs.keys()) > 0:
+    raise Exception("'common_kwargs' is overriding 'kwargs' parameters.")
+  common_kwargs.update(kwargs)
 
   if isinstance(second_stage_box_predictor,
                 rfcn_box_predictor.RfcnBoxPredictor):

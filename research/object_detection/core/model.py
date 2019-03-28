@@ -63,15 +63,20 @@ class DetectionModel(object):
   """Abstract base class for detection models."""
   __metaclass__ = abc.ABCMeta
 
-  def __init__(self, num_classes):
+  def __init__(self, num_classes, apply_final_nms=True):
     """Constructor.
 
     Args:
       num_classes: number of classes.  Note that num_classes *does not* include
       background categories that might be implicitly predicted in various
       implementations.
+      apply_final_nms: Whether to return the raw bounding boxes or to apply a final
+                       normalization of coordinates and NMS on it. This will use
+                       shape_utils.static_or_dynamic_map_fn which is not compatible
+                       with ONNX or third party runtimes.
     """
     self._num_classes = num_classes
+    self._apply_final_nms = apply_final_nms
     self._groundtruth_lists = {}
 
   @property
