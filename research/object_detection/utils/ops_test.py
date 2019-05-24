@@ -1150,12 +1150,14 @@ class MergeBoxesWithMultipleLabelsTest(tf.test.TestCase):
         [[0.25, 0.25, 0.75, 0.75], [0.0, 0.0, 0.5, 0.75],
          [0.25, 0.25, 0.75, 0.75]],
         dtype=tf.float32)
-    class_indices = tf.constant([0, 4, 2], dtype=tf.int32)
-    class_confidences = tf.constant([0.8, 0.2, 0.1], dtype=tf.float32)
     num_classes = 5
+    class_encodings = tf.one_hot(tf.constant([0, 4, 2], dtype=tf.int32), num_classes)
+    class_confidences = tf.constant([0.8, 0.2, 0.1], dtype=tf.float32)
+    class_confidences = tf.reshape(class_confidences, [-1, 1]) * class_encodings
+
     merged_boxes, merged_classes, merged_confidences, merged_box_indices = (
         ops.merge_boxes_with_multiple_labels(
-            boxes, class_indices, class_confidences, num_classes))
+            boxes, class_encodings, class_confidences, num_classes))
     expected_merged_boxes = np.array(
         [[0.25, 0.25, 0.75, 0.75], [0.0, 0.0, 0.5, 0.75]], dtype=np.float32)
     expected_merged_classes = np.array(
@@ -1178,13 +1180,15 @@ class MergeBoxesWithMultipleLabelsTest(tf.test.TestCase):
         [[0, 0, 1, 1], [0, 1, 1, 1], [1, 0, 1, 1], [1, 1, 1, 1],
          [1, 1, 1, 1], [1, 0, 1, 1], [0, 1, 1, 1], [0, 0, 1, 1]],
         dtype=tf.float32)
-    class_indices = tf.constant([0, 1, 2, 3, 2, 1, 0, 3], dtype=tf.int32)
+    num_classes = 4
+    class_encodings = tf.one_hot(tf.constant([0, 1, 2, 3, 2, 1, 0, 3], dtype=tf.int32), num_classes)
     class_confidences = tf.constant([0.1, 0.9, 0.2, 0.8, 0.3, 0.7, 0.4, 0.6],
                                     dtype=tf.float32)
-    num_classes = 4
+    class_confidences = tf.reshape(class_confidences, [-1, 1]) * class_encodings
+
     merged_boxes, merged_classes, merged_confidences, merged_box_indices = (
         ops.merge_boxes_with_multiple_labels(
-            boxes, class_indices, class_confidences, num_classes))
+            boxes, class_encodings, class_confidences, num_classes))
     expected_merged_boxes = np.array(
         [[0, 0, 1, 1], [0, 1, 1, 1], [1, 0, 1, 1], [1, 1, 1, 1]],
         dtype=np.float32)

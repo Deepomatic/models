@@ -74,7 +74,7 @@ class InputsTest(test_case.TestCase, parameterized.TestCase):
     model_config = configs['model']
     model_config.faster_rcnn.num_classes = 37
     train_input_fn = inputs.create_train_input_fn(
-        configs['train_config'], configs['train_input_config'], model_config)
+        configs['train_config'], configs['train_input_config'], model_config, one_hot_encoded_labels=False)
     features, labels = _make_initializable_iterator(train_input_fn()).get_next()
 
     self.assertAllEqual([1, None, None, 3],
@@ -113,7 +113,7 @@ class InputsTest(test_case.TestCase, parameterized.TestCase):
     configs['train_config'].retain_original_images = True
     model_config.faster_rcnn.num_classes = 37
     train_input_fn = inputs.create_train_input_fn(
-        configs['train_config'], configs['train_input_config'], model_config)
+        configs['train_config'], configs['train_input_config'], model_config, one_hot_encoded_labels=False)
     features, labels = _make_initializable_iterator(train_input_fn()).get_next()
 
     self.assertAllEqual([1, None, None, 5],
@@ -159,7 +159,7 @@ class InputsTest(test_case.TestCase, parameterized.TestCase):
     eval_config = configs['eval_config']
     eval_config.batch_size = eval_batch_size
     eval_input_fn = inputs.create_eval_input_fn(
-        eval_config, configs['eval_input_configs'][0], model_config)
+        eval_config, configs['eval_input_configs'][0], model_config, one_hot_encoded_labels=False)
     features, labels = _make_initializable_iterator(eval_input_fn()).get_next()
     self.assertAllEqual([eval_batch_size, None, None, 3],
                         features[fields.InputDataFields.image].shape.as_list())
@@ -211,7 +211,7 @@ class InputsTest(test_case.TestCase, parameterized.TestCase):
     model_config.ssd.num_classes = 37
     batch_size = configs['train_config'].batch_size
     train_input_fn = inputs.create_train_input_fn(
-        configs['train_config'], configs['train_input_config'], model_config)
+        configs['train_config'], configs['train_input_config'], model_config, one_hot_encoded_labels=False)
     features, labels = _make_initializable_iterator(train_input_fn()).get_next()
 
     self.assertAllEqual([batch_size, 300, 300, 3],
@@ -255,7 +255,7 @@ class InputsTest(test_case.TestCase, parameterized.TestCase):
     eval_config = configs['eval_config']
     eval_config.batch_size = eval_batch_size
     eval_input_fn = inputs.create_eval_input_fn(
-        eval_config, configs['eval_input_configs'][0], model_config)
+        eval_config, configs['eval_input_configs'][0], model_config, one_hot_encoded_labels=False)
     features, labels = _make_initializable_iterator(eval_input_fn()).get_next()
     self.assertAllEqual([eval_batch_size, 300, 300, 3],
                         features[fields.InputDataFields.image].shape.as_list())
@@ -340,7 +340,7 @@ class InputsTest(test_case.TestCase, parameterized.TestCase):
     train_input_fn = inputs.create_train_input_fn(
         train_config=configs['eval_config'],  # Expecting `TrainConfig`.
         train_input_config=configs['train_input_config'],
-        model_config=configs['model'])
+        model_config=configs['model'], one_hot_encoded_labels=False)
     with self.assertRaises(TypeError):
       train_input_fn()
 
@@ -351,7 +351,7 @@ class InputsTest(test_case.TestCase, parameterized.TestCase):
     train_input_fn = inputs.create_train_input_fn(
         train_config=configs['train_config'],
         train_input_config=configs['model'],  # Expecting `InputReader`.
-        model_config=configs['model'])
+        model_config=configs['model'], one_hot_encoded_labels=False)
     with self.assertRaises(TypeError):
       train_input_fn()
 
@@ -362,7 +362,7 @@ class InputsTest(test_case.TestCase, parameterized.TestCase):
     train_input_fn = inputs.create_train_input_fn(
         train_config=configs['train_config'],
         train_input_config=configs['train_input_config'],
-        model_config=configs['train_config'])  # Expecting `DetectionModel`.
+        model_config=configs['train_config'], one_hot_encoded_labels=False)  # Expecting `DetectionModel`.
     with self.assertRaises(TypeError):
       train_input_fn()
 
@@ -373,7 +373,7 @@ class InputsTest(test_case.TestCase, parameterized.TestCase):
     eval_input_fn = inputs.create_eval_input_fn(
         eval_config=configs['train_config'],  # Expecting `EvalConfig`.
         eval_input_config=configs['eval_input_configs'][0],
-        model_config=configs['model'])
+        model_config=configs['model'], one_hot_encoded_labels=False)
     with self.assertRaises(TypeError):
       eval_input_fn()
 
@@ -384,7 +384,7 @@ class InputsTest(test_case.TestCase, parameterized.TestCase):
     eval_input_fn = inputs.create_eval_input_fn(
         eval_config=configs['eval_config'],
         eval_input_config=configs['model'],  # Expecting `InputReader`.
-        model_config=configs['model'])
+        model_config=configs['model'], one_hot_encoded_labels=False)
     with self.assertRaises(TypeError):
       eval_input_fn()
 
@@ -395,7 +395,7 @@ class InputsTest(test_case.TestCase, parameterized.TestCase):
     eval_input_fn = inputs.create_eval_input_fn(
         eval_config=configs['eval_config'],
         eval_input_config=configs['eval_input_configs'][0],
-        model_config=configs['eval_config'])  # Expecting `DetectionModel`.
+        model_config=configs['eval_config'], one_hot_encoded_labels=False)  # Expecting `DetectionModel`.
     with self.assertRaises(TypeError):
       eval_input_fn()
 
@@ -593,7 +593,7 @@ class DataTransformationFnTest(test_case.TestCase):
         fields.InputDataFields.image_additional_channels:
             tf.constant(additional_channels),
         fields.InputDataFields.groundtruth_classes:
-            tf.constant(np.array([1, 1], np.int32))
+            tf.constant(np.array([1, 1], np.float32))
     }
 
     input_transformation_fn = functools.partial(
@@ -618,7 +618,7 @@ class DataTransformationFnTest(test_case.TestCase):
         fields.InputDataFields.groundtruth_boxes:
             tf.constant(np.array([[0, 0, 1, 1], [.5, .5, 1, 1]], np.float32)),
         fields.InputDataFields.groundtruth_classes:
-            tf.constant(np.array([3, 1], np.int32))
+            tf.constant(np.array([[0, 0, 1], [1, 0, 0]], np.float32).flatten())
     }
     num_classes = 3
     input_transformation_fn = functools.partial(
@@ -636,72 +636,6 @@ class DataTransformationFnTest(test_case.TestCase):
     self.assertAllClose(
         transformed_inputs[fields.InputDataFields.groundtruth_confidences],
         [[0, 0, 1], [1, 0, 0]])
-
-  def test_returns_correct_labels_with_unrecognized_class(self):
-    tensor_dict = {
-        fields.InputDataFields.image:
-            tf.constant(np.random.rand(4, 4, 3).astype(np.float32)),
-        fields.InputDataFields.groundtruth_boxes:
-            tf.constant(
-                np.array([[0, 0, 1, 1], [.2, .2, 4, 4], [.5, .5, 1, 1]],
-                         np.float32)),
-        fields.InputDataFields.groundtruth_area:
-            tf.constant(np.array([.5, .4, .3])),
-        fields.InputDataFields.groundtruth_classes:
-            tf.constant(np.array([3, -1, 1], np.int32)),
-        fields.InputDataFields.groundtruth_keypoints:
-            tf.constant(
-                np.array([[[.1, .1]], [[.2, .2]], [[.5, .5]]],
-                         np.float32)),
-        fields.InputDataFields.groundtruth_keypoint_visibilities:
-            tf.constant([True, False, True]),
-        fields.InputDataFields.groundtruth_instance_masks:
-            tf.constant(np.random.rand(3, 4, 4).astype(np.float32)),
-        fields.InputDataFields.groundtruth_is_crowd:
-            tf.constant([False, True, False]),
-        fields.InputDataFields.groundtruth_difficult:
-            tf.constant(np.array([0, 0, 1], np.int32))
-    }
-
-    num_classes = 3
-    input_transformation_fn = functools.partial(
-        inputs.transform_input_data,
-        model_preprocess_fn=_fake_model_preprocessor_fn,
-        image_resizer_fn=_fake_image_resizer_fn,
-        num_classes=num_classes)
-    with self.test_session() as sess:
-      transformed_inputs = sess.run(
-          input_transformation_fn(tensor_dict=tensor_dict))
-
-    self.assertAllClose(
-        transformed_inputs[fields.InputDataFields.groundtruth_classes],
-        [[0, 0, 1], [1, 0, 0]])
-    self.assertAllEqual(
-        transformed_inputs[fields.InputDataFields.num_groundtruth_boxes], 2)
-    self.assertAllClose(
-        transformed_inputs[fields.InputDataFields.groundtruth_area], [.5, .3])
-    self.assertAllEqual(
-        transformed_inputs[fields.InputDataFields.groundtruth_confidences],
-        [[0, 0, 1], [1, 0, 0]])
-    self.assertAllClose(
-        transformed_inputs[fields.InputDataFields.groundtruth_boxes],
-        [[0, 0, 1, 1], [.5, .5, 1, 1]])
-    self.assertAllClose(
-        transformed_inputs[fields.InputDataFields.groundtruth_keypoints],
-        [[[.1, .1]], [[.5, .5]]])
-    self.assertAllEqual(
-        transformed_inputs[
-            fields.InputDataFields.groundtruth_keypoint_visibilities],
-        [True, True])
-    self.assertAllEqual(
-        transformed_inputs[
-            fields.InputDataFields.groundtruth_instance_masks].shape, [2, 4, 4])
-    self.assertAllEqual(
-        transformed_inputs[fields.InputDataFields.groundtruth_is_crowd],
-        [False, False])
-    self.assertAllEqual(
-        transformed_inputs[fields.InputDataFields.groundtruth_difficult],
-        [0, 1])
 
   def test_returns_correct_merged_boxes(self):
     tensor_dict = {
@@ -710,7 +644,7 @@ class DataTransformationFnTest(test_case.TestCase):
         fields.InputDataFields.groundtruth_boxes:
             tf.constant(np.array([[.5, .5, 1, 1], [.5, .5, 1, 1]], np.float32)),
         fields.InputDataFields.groundtruth_classes:
-            tf.constant(np.array([3, 1], np.int32))
+            tf.constant(np.array([[0, 0, 1], [1, 0, 0]], np.float32).flatten())
     }
 
     num_classes = 3
@@ -744,7 +678,7 @@ class DataTransformationFnTest(test_case.TestCase):
         fields.InputDataFields.groundtruth_boxes:
             tf.constant(np.array([[0, 0, 1, 1], [.5, .5, 1, 1]], np.float32)),
         fields.InputDataFields.groundtruth_classes:
-            tf.constant(np.array([3, 1], np.int32)),
+            tf.constant(np.array([[0, 0, 1], [1, 0, 0]], np.float32).flatten()),
         fields.InputDataFields.groundtruth_confidences:
             tf.constant(np.array([1.0, -1.0], np.float32))
     }
@@ -772,7 +706,7 @@ class DataTransformationFnTest(test_case.TestCase):
         fields.InputDataFields.groundtruth_instance_masks:
             tf.constant(np.random.rand(2, 4, 4).astype(np.float32)),
         fields.InputDataFields.groundtruth_classes:
-            tf.constant(np.array([3, 1], np.int32)),
+            tf.constant(np.array([[0, 0, 1], [1, 0, 0]], np.float32).flatten()),
         fields.InputDataFields.original_image_spatial_shape:
             tf.constant(np.array([4, 4], np.int32))
     }
@@ -813,7 +747,7 @@ class DataTransformationFnTest(test_case.TestCase):
         fields.InputDataFields.image:
             tf.constant(np_image),
         fields.InputDataFields.groundtruth_classes:
-            tf.constant(np.array([3, 1], np.int32))
+            tf.constant(np.array([[0, 0, 1], [1, 0, 0]], np.float32).flatten())
     }
 
     def fake_model_preprocessor_fn(image):
@@ -841,7 +775,7 @@ class DataTransformationFnTest(test_case.TestCase):
         fields.InputDataFields.image:
             tf.constant(np_image),
         fields.InputDataFields.groundtruth_classes:
-            tf.constant(np.array([3, 1], np.int32))
+            tf.constant(np.array([[0, 0, 1, 0], [1, 0, 0, 0]], np.float32).flatten())
     }
 
     def add_one_data_augmentation_fn(tensor_dict):
@@ -862,7 +796,7 @@ class DataTransformationFnTest(test_case.TestCase):
                         np_image + 1)
     self.assertAllEqual(
         augmented_tensor_dict[fields.InputDataFields.groundtruth_classes],
-        [[0, 0, 0, 1], [0, 1, 0, 0]])
+        [[1, 1, 2, 1], [2, 1, 1, 1]])
 
   def test_applies_data_augmentation_fn_before_model_preprocess_fn(self):
     np_image = np.random.randint(256, size=(4, 4, 3))
@@ -870,7 +804,7 @@ class DataTransformationFnTest(test_case.TestCase):
         fields.InputDataFields.image:
             tf.constant(np_image),
         fields.InputDataFields.groundtruth_classes:
-            tf.constant(np.array([3, 1], np.int32))
+            tf.constant(np.array([[0, 0, 1, 0], [1, 0, 0, 0]], np.float32).flatten())
     }
 
     def mul_two_model_preprocessor_fn(image):
@@ -904,7 +838,7 @@ class PadInputDataToStaticShapesFnTest(test_case.TestCase):
         fields.InputDataFields.groundtruth_boxes:
             tf.placeholder(tf.float32, [None, 4]),
         fields.InputDataFields.groundtruth_classes:
-            tf.placeholder(tf.int32, [None, 3]),
+            tf.placeholder(tf.float32, [None, 3]),
         fields.InputDataFields.true_image_shape:
             tf.placeholder(tf.int32, [3]),
         fields.InputDataFields.original_image_spatial_shape:
@@ -937,7 +871,7 @@ class PadInputDataToStaticShapesFnTest(test_case.TestCase):
         fields.InputDataFields.groundtruth_boxes:
             tf.placeholder(tf.float32, [None, 4]),
         fields.InputDataFields.groundtruth_classes:
-            tf.placeholder(tf.int32, [None, 3]),
+            tf.placeholder(tf.float32, [None, 3]),
         fields.InputDataFields.num_groundtruth_boxes:
             tf.placeholder(tf.int32, [])
     }

@@ -46,7 +46,7 @@ class InputReaderBuilderTest(tf.test.TestCase):
         'image/object/bbox/xmax': dataset_util.float_list_feature([1.0]),
         'image/object/bbox/ymin': dataset_util.float_list_feature([0.0]),
         'image/object/bbox/ymax': dataset_util.float_list_feature([1.0]),
-        'image/object/class/label': dataset_util.int64_list_feature([2]),
+        'image/object/class/label': dataset_util.float_list_feature([0, 1]),
         'image/object/mask': dataset_util.float_list_feature(flat_mask),
     }))
     writer.write(example.SerializeToString())
@@ -76,7 +76,7 @@ class InputReaderBuilderTest(tf.test.TestCase):
     self.assertEquals(
         (4, 5, 3), output_dict[fields.InputDataFields.image].shape)
     self.assertEquals(
-        [2], output_dict[fields.InputDataFields.groundtruth_classes])
+        (0, 1), tuple(output_dict[fields.InputDataFields.groundtruth_classes]))
     self.assertEquals(
         (1, 4), output_dict[fields.InputDataFields.groundtruth_boxes].shape)
     self.assertAllEqual(
@@ -104,7 +104,7 @@ class InputReaderBuilderTest(tf.test.TestCase):
     self.assertEquals(
         (4, 5, 3), output_dict[fields.InputDataFields.image].shape)
     self.assertEquals(
-        [2], output_dict[fields.InputDataFields.groundtruth_classes])
+        (0, 1), tuple(output_dict[fields.InputDataFields.groundtruth_classes]))
     self.assertEquals(
         (1, 4), output_dict[fields.InputDataFields.groundtruth_boxes].shape)
     self.assertAllEqual(

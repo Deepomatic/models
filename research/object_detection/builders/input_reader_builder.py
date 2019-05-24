@@ -64,13 +64,9 @@ def build(input_reader_config):
         capacity=input_reader_config.queue_capacity,
         min_after_dequeue=input_reader_config.min_after_dequeue)
 
-    label_map_proto_file = None
-    if input_reader_config.HasField('label_map_path'):
-      label_map_proto_file = input_reader_config.label_map_path
     decoder = tf_example_decoder.TfExampleDecoder(
         load_instance_masks=input_reader_config.load_instance_masks,
-        instance_mask_type=input_reader_config.mask_type,
-        label_map_proto_file=label_map_proto_file)
+        instance_mask_type=input_reader_config.mask_type)
     return decoder.decode(string_tensor)
 
   raise ValueError('Unsupported input_reader_config.')

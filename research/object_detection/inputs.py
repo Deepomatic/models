@@ -54,7 +54,8 @@ def transform_input_data(tensor_dict,
                          merge_multiple_boxes=False,
                          retain_original_image=False,
                          use_multiclass_scores=False,
-                         use_bfloat16=False):
+                         use_bfloat16=False,
+                         one_hot_encoded_labels=True):
   """A single function that is responsible for all input data transformations.
 
   Data transformation functions are applied in the following order.
@@ -91,6 +92,7 @@ def transform_input_data(tensor_dict,
     use_multiclass_scores: whether to use multiclass scores as
       class targets instead of one-hot encoding of `groundtruth_classes`.
     use_bfloat16: (optional) a bool, whether to use bfloat16 in training.
+    one_hot_encoded_labels: (optional) a bool, whether labels are passed a class index starting with 1
 
   Returns:
     A dictionary keyed by fields.InputDataFields containing the tensors obtained
@@ -98,6 +100,25 @@ def transform_input_data(tensor_dict,
   """
   # Reshape flattened multiclass scores tensor into a 2D tensor of shape
   # [num_boxes, num_classes].
+
+  # Reshape ground truth one hots
+  if one_hot_encoded_labels:
+    tensor_dict[fields.InputDataFields.groundtruth_classes] = tf.reshape(
+      tensor_dict[fields.InputDataFields.groundtruth_classes], (-1, num_classes))
+  else:
+    def encode_to_one_hot(labels):
+      return tf.one_hot(labels - 1, num_classes)
+    tensor_dict[fields.InputDataFields.groundtruth_classes] = (
+      encode_to_one_hot(tensor_dict[fields.InputDataFields.groundtruth_classes]))
+    if fields.InputDataFields.groundtruth_image_classes in tensor_dict:
+      tensor_dict[fields.InputDataFields.groundtruth_image_classes] = (
+        encode_to_one_hot(tensor_dict[fields.InputDataFields.groundtruth_image_classes]))
+
+  # Sum the one hot at the image level if there are multiple (tagging)
+  if fields.InputDataFields.groundtruth_image_classes in tensor_dict:
+    tensor_dict[fields.InputDataFields.groundtruth_image_classes] = tf.reduce_sum(tf.reshape(
+      tensor_dict[fields.InputDataFields.groundtruth_image_classes], [-1, num_classes]), axis=0)
+
   if fields.InputDataFields.multiclass_scores in tensor_dict:
     tensor_dict[fields.InputDataFields.multiclass_scores] = tf.reshape(
         tensor_dict[fields.InputDataFields.multiclass_scores], [
@@ -107,7 +128,6 @@ def transform_input_data(tensor_dict,
   if fields.InputDataFields.groundtruth_boxes in tensor_dict:
     tensor_dict = util_ops.filter_groundtruth_with_nan_box_coordinates(
         tensor_dict)
-    tensor_dict = util_ops.filter_unrecognized_classes(tensor_dict)
 
   if retain_original_image:
     tensor_dict[fields.InputDataFields.original_image] = tf.cast(
@@ -142,28 +162,17 @@ def transform_input_data(tensor_dict,
     tensor_dict[fields.InputDataFields.
                 groundtruth_instance_masks] = resized_masks
 
-  # Transform groundtruth classes to one hot encodings.
-  label_offset = 1
-  zero_indexed_groundtruth_classes = tensor_dict[
-      fields.InputDataFields.groundtruth_classes] - label_offset
-  tensor_dict[fields.InputDataFields.groundtruth_classes] = tf.one_hot(
-      zero_indexed_groundtruth_classes, num_classes)
-
   if use_multiclass_scores:
     tensor_dict[fields.InputDataFields.groundtruth_classes] = tensor_dict[
         fields.InputDataFields.multiclass_scores]
     tensor_dict.pop(fields.InputDataFields.multiclass_scores, None)
 
   if fields.InputDataFields.groundtruth_confidences in tensor_dict:
-    groundtruth_confidences = tensor_dict[
-        fields.InputDataFields.groundtruth_confidences]
     # Map the confidences to the one-hot encoding of classes
     tensor_dict[fields.InputDataFields.groundtruth_confidences] = (
-        tf.reshape(groundtruth_confidences, [-1, 1]) *
+        tf.reshape(tensor_dict[fields.InputDataFields.groundtruth_confidences], [-1, 1]) *
         tensor_dict[fields.InputDataFields.groundtruth_classes])
   else:
-    groundtruth_confidences = tf.ones_like(
-        zero_indexed_groundtruth_classes, dtype=tf.float32)
     tensor_dict[fields.InputDataFields.groundtruth_confidences] = (
         tensor_dict[fields.InputDataFields.groundtruth_classes])
 
@@ -171,8 +180,8 @@ def transform_input_data(tensor_dict,
     merged_boxes, merged_classes, merged_confidences, _ = (
         util_ops.merge_boxes_with_multiple_labels(
             tensor_dict[fields.InputDataFields.groundtruth_boxes],
-            zero_indexed_groundtruth_classes,
-            groundtruth_confidences,
+            tensor_dict[fields.InputDataFields.groundtruth_classes],
+            tensor_dict[fields.InputDataFields.groundtruth_confidences],
             num_classes))
     merged_classes = tf.cast(merged_classes, tf.float32)
     tensor_dict[fields.InputDataFields.groundtruth_boxes] = merged_boxes
@@ -424,7 +433,7 @@ def _get_features_dict(input_dict):
 
 
 def create_train_input_fn(train_config, train_input_config,
-                          model_config):
+                          model_config, one_hot_encoded_labels=True):
   """Creates a train `input` function for `Estimator`.
 
   Args:
@@ -509,7 +518,8 @@ def create_train_input_fn(train_config, train_input_config,
           merge_multiple_boxes=train_config.merge_multiple_label_boxes,
           retain_original_image=train_config.retain_original_images,
           use_multiclass_scores=train_config.use_multiclass_scores,
-          use_bfloat16=train_config.use_bfloat16)
+          use_bfloat16=train_config.use_bfloat16,
+          one_hot_encoded_labels=one_hot_encoded_labels)
 
       tensor_dict = pad_input_data_to_static_shapes(
           tensor_dict=transform_data_fn(tensor_dict),
@@ -522,13 +532,14 @@ def create_train_input_fn(train_config, train_input_config,
     dataset = INPUT_BUILDER_UTIL_MAP['dataset_build'](
         train_input_config,
         transform_input_data_fn=transform_and_pad_input_data_fn,
-        batch_size=params['batch_size'] if params else train_config.batch_size)
+        batch_size=params['batch_size'] if params else train_config.batch_size,
+        one_hot_encoded_labels=one_hot_encoded_labels)
     return dataset
 
   return _train_input_fn
 
 
-def create_eval_input_fn(eval_config, eval_input_config, model_config):
+def create_eval_input_fn(eval_config, eval_input_config, model_config, one_hot_encoded_labels=True):
   """Creates an eval `input` function for `Estimator`.
 
   Args:
@@ -602,7 +613,8 @@ def create_eval_input_fn(eval_config, eval_input_config, model_config):
           image_resizer_fn=image_resizer_fn,
           num_classes=num_classes,
           data_augmentation_fn=None,
-          retain_original_image=eval_config.retain_original_images)
+          retain_original_image=eval_config.retain_original_images,
+          one_hot_encoded_labels=one_hot_encoded_labels)
       tensor_dict = pad_input_data_to_static_shapes(
           tensor_dict=transform_data_fn(tensor_dict),
           max_num_boxes=eval_input_config.max_number_of_boxes,
@@ -613,7 +625,8 @@ def create_eval_input_fn(eval_config, eval_input_config, model_config):
     dataset = INPUT_BUILDER_UTIL_MAP['dataset_build'](
         eval_input_config,
         batch_size=params['batch_size'] if params else eval_config.batch_size,
-        transform_input_data_fn=transform_and_pad_input_data_fn)
+        transform_input_data_fn=transform_and_pad_input_data_fn,
+        one_hot_encoded_labels=one_hot_encoded_labels)
     return dataset
 
   return _eval_input_fn

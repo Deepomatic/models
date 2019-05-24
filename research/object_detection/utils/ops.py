@@ -838,9 +838,9 @@ def merge_boxes_with_multiple_labels(boxes,
   Args:
     boxes: A tf.float32 tensor with shape [N, 4] holding N boxes. Only
       normalized coordinates are allowed.
-    classes: A tf.int32 tensor with shape [N] holding class indices.
+    classes: A tf.int32 tensor with shape [N, num_classes] holding one-hot class encodings.
       The class index starts at 0.
-    confidences: A tf.float32 tensor with shape [N] holding class confidences.
+    confidences: A tf.float32 tensor with shape [N, num_classes] holding class confidences.
     num_classes: total number of classes to use for K-hot encoding.
     quantization_bins: the number of bins used to quantize the box coordinate.
 
@@ -887,19 +887,15 @@ def merge_boxes_with_multiple_labels(boxes,
       box_mask = tf.equal(
           unique_indices, i * tf.ones(num_boxes, dtype=tf.int32))
       box_mask = tf.reshape(box_mask, [-1])
-      box_indices = tf.boolean_mask(classes, box_mask)
-      box_confidences = tf.boolean_mask(confidences, box_mask)
-      box_class_encodings = tf.sparse_to_dense(
-          box_indices, [num_classes], 1, validate_indices=False)
-      box_confidence_encodings = tf.sparse_to_dense(
-          box_indices, [num_classes], box_confidences, validate_indices=False)
+      box_class_encodings = tf.reduce_sum(tf.boolean_mask(classes, box_mask, axis=0), axis=0)
+      box_confidence_encodings = tf.reduce_sum(tf.boolean_mask(confidences, box_mask, axis=0), axis=0)
       return box_class_encodings, box_confidence_encodings
 
     class_encodings, confidence_encodings = tf.map_fn(
         map_box_encodings,
         tf.range(num_unique_boxes),
         back_prop=False,
-        dtype=(tf.int32, tf.float32))
+        dtype=(tf.float32, tf.float32))
 
     merged_boxes = tf.reshape(merged_boxes, [-1, 4])
     class_encodings = tf.reshape(class_encodings, [-1, num_classes])
