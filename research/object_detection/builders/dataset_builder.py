@@ -112,14 +112,10 @@ def build(input_reader_config, batch_size=None, transform_input_data_fn=None):
       raise ValueError('At least one input path must be specified in '
                        '`input_reader_config`.')
 
-    label_map_proto_file = None
-    if input_reader_config.HasField('label_map_path'):
-      label_map_proto_file = input_reader_config.label_map_path
     decoder = tf_example_decoder.TfExampleDecoder(
         load_instance_masks=input_reader_config.load_instance_masks,
         load_multiclass_scores=input_reader_config.load_multiclass_scores,
         instance_mask_type=input_reader_config.mask_type,
-        label_map_proto_file=label_map_proto_file,
         use_display_name=input_reader_config.use_display_name,
         num_additional_channels=input_reader_config.num_additional_channels)
 

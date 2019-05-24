@@ -27,107 +27,12 @@ from object_detection.utils import label_map_util
 slim_example_decoder = tf.contrib.slim.tfexample_decoder
 
 
-class _ClassTensorHandler(slim_example_decoder.Tensor):
-  """An ItemHandler to fetch class ids from class text."""
-
-  def __init__(self,
-               tensor_key,
-               label_map_proto_file,
-               shape_keys=None,
-               shape=None,
-               default_value=''):
-    """Initializes the LookupTensor handler.
-
-    Simply calls a vocabulary (most often, a label mapping) lookup.
-
-    Args:
-      tensor_key: the name of the `TFExample` feature to read the tensor from.
-      label_map_proto_file: File path to a text format LabelMapProto message
-        mapping class text to id.
-      shape_keys: Optional name or list of names of the TF-Example feature in
-        which the tensor shape is stored. If a list, then each corresponds to
-        one dimension of the shape.
-      shape: Optional output shape of the `Tensor`. If provided, the `Tensor` is
-        reshaped accordingly.
-      default_value: The value used when the `tensor_key` is not found in a
-        particular `TFExample`.
-
-    Raises:
-      ValueError: if both `shape_keys` and `shape` are specified.
-    """
-    name_to_id = label_map_util.get_label_map_dict(
-        label_map_proto_file, use_display_name=False)
-    # We use a default_value of -1, but we expect all labels to be contained
-    # in the label map.
-    name_to_id_table = tf.contrib.lookup.HashTable(
-        initializer=tf.contrib.lookup.KeyValueTensorInitializer(
-            keys=tf.constant(list(name_to_id.keys())),
-            values=tf.constant(list(name_to_id.values()), dtype=tf.int64)),
-        default_value=-1)
-    display_name_to_id = label_map_util.get_label_map_dict(
-        label_map_proto_file, use_display_name=True)
-    # We use a default_value of -1, but we expect all labels to be contained
-    # in the label map.
-    display_name_to_id_table = tf.contrib.lookup.HashTable(
-        initializer=tf.contrib.lookup.KeyValueTensorInitializer(
-            keys=tf.constant(list(display_name_to_id.keys())),
-            values=tf.constant(
-                list(display_name_to_id.values()), dtype=tf.int64)),
-        default_value=-1)
-
-    self._name_to_id_table = name_to_id_table
-    self._display_name_to_id_table = display_name_to_id_table
-    super(_ClassTensorHandler, self).__init__(tensor_key, shape_keys, shape,
-                                              default_value)
-
-  def tensors_to_item(self, keys_to_tensors):
-    unmapped_tensor = super(_ClassTensorHandler,
-                            self).tensors_to_item(keys_to_tensors)
-    return tf.maximum(self._name_to_id_table.lookup(unmapped_tensor),
-                      self._display_name_to_id_table.lookup(unmapped_tensor))
-
-
-class _BackupHandler(slim_example_decoder.ItemHandler):
-  """An ItemHandler that tries two ItemHandlers in order."""
-
-  def __init__(self, handler, backup):
-    """Initializes the BackupHandler handler.
-
-    If the first Handler's tensors_to_item returns a Tensor with no elements,
-    the second Handler is used.
-
-    Args:
-      handler: The primary ItemHandler.
-      backup: The backup ItemHandler.
-
-    Raises:
-      ValueError: if either is not an ItemHandler.
-    """
-    if not isinstance(handler, slim_example_decoder.ItemHandler):
-      raise ValueError('Primary handler is of type %s instead of ItemHandler' %
-                       type(handler))
-    if not isinstance(backup, slim_example_decoder.ItemHandler):
-      raise ValueError(
-          'Backup handler is of type %s instead of ItemHandler' % type(backup))
-    self._handler = handler
-    self._backup = backup
-    super(_BackupHandler, self).__init__(handler.keys + backup.keys)
-
-  def tensors_to_item(self, keys_to_tensors):
-    item = self._handler.tensors_to_item(keys_to_tensors)
-    return tf.cond(
-        pred=tf.equal(tf.reduce_prod(tf.shape(item)), 0),
-        true_fn=lambda: self._backup.tensors_to_item(keys_to_tensors),
-        false_fn=lambda: item)
-
-
 class TfExampleDecoder(data_decoder.DataDecoder):
   """Tensorflow Example proto decoder."""
 
   def __init__(self,
                load_instance_masks=False,
                instance_mask_type=input_reader_pb2.NUMERICAL_MASKS,
-               label_map_proto_file=None,
                use_display_name=False,
                dct_method='',
                num_keypoints=0,
@@ -184,6 +89,8 @@ class TfExampleDecoder(data_decoder.DataDecoder):
         'image/class/text':
             tf.VarLenFeature(tf.string),
         'image/class/label':
+            tf.VarLenFeature(tf.float32),
+        'image/class/label/shape':
             tf.VarLenFeature(tf.int64),
         # Object boxes and classes.
         'image/object/bbox/xmin':
@@ -195,6 +102,8 @@ class TfExampleDecoder(data_decoder.DataDecoder):
         'image/object/bbox/ymax':
             tf.VarLenFeature(tf.float32),
         'image/object/class/label':
+            tf.VarLenFeature(tf.float32),
+        'image/object/class/label/shape':
             tf.VarLenFeature(tf.int64),
         'image/object/class/text':
             tf.VarLenFeature(tf.string),
@@ -298,24 +207,9 @@ class TfExampleDecoder(data_decoder.DataDecoder):
                     self._decode_png_instance_masks))
       else:
         raise ValueError('Did not recognize the `instance_mask_type` option.')
-    if label_map_proto_file:
-      # If the label_map_proto is provided, try to use it in conjunction with
-      # the class text, and fall back to a materialized ID.
-      label_handler = _BackupHandler(
-          _ClassTensorHandler(
-              'image/object/class/text', label_map_proto_file,
-              default_value=''),
-          slim_example_decoder.Tensor('image/object/class/label'))
-      image_label_handler = _BackupHandler(
-          _ClassTensorHandler(
-              fields.TfExampleFields.image_class_text,
-              label_map_proto_file,
-              default_value=''),
-          slim_example_decoder.Tensor(fields.TfExampleFields.image_class_label))
-    else:
-      label_handler = slim_example_decoder.Tensor('image/object/class/label')
-      image_label_handler = slim_example_decoder.Tensor(
-          fields.TfExampleFields.image_class_label)
+    label_handler = slim_example_decoder.Tensor('image/object/class/label', shape_keys='image/object/class/label/shape')
+    image_label_handler = slim_example_decoder.Tensor(
+        fields.TfExampleFields.image_class_label, shape_keys='image/class/label/shape')
     self.items_to_handlers[
         fields.InputDataFields.groundtruth_classes] = label_handler
     self.items_to_handlers[
