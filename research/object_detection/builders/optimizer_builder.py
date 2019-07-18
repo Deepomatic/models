@@ -21,11 +21,13 @@ import tensorflow as tf
 from object_detection.utils import learning_schedules
 
 
-def build(optimizer_config):
-  """Create optimizer based on config.
+def build(optimizer_config, num_train_steps):
+  """Create optimizer based on config. num_train_steps is needed to compute steps
+  as a number of steps instead of the percentage given in the proto.
 
   Args:
     optimizer_config: A Optimizer proto message.
+    num_train_steps (int): Number of training steps in the experiment.
 
   Returns:
     An optimizer and a list of variables for summary.
@@ -39,7 +41,7 @@ def build(optimizer_config):
   summary_vars = []
   if optimizer_type == 'rms_prop_optimizer':
     config = optimizer_config.rms_prop_optimizer
-    learning_rate = _create_learning_rate(config.learning_rate)
+    learning_rate = _create_learning_rate(config.learning_rate, num_train_steps)
     summary_vars.append(learning_rate)
     optimizer = tf.train.RMSPropOptimizer(
         learning_rate,
@@ -49,7 +51,7 @@ def build(optimizer_config):
 
   if optimizer_type == 'momentum_optimizer':
     config = optimizer_config.momentum_optimizer
-    learning_rate = _create_learning_rate(config.learning_rate)
+    learning_rate = _create_learning_rate(config.learning_rate, num_train_steps)
     summary_vars.append(learning_rate)
     optimizer = tf.train.MomentumOptimizer(
         learning_rate,
@@ -57,7 +59,7 @@ def build(optimizer_config):
 
   if optimizer_type == 'adam_optimizer':
     config = optimizer_config.adam_optimizer
-    learning_rate = _create_learning_rate(config.learning_rate)
+    learning_rate = _create_learning_rate(config.learning_rate, num_train_steps)
     summary_vars.append(learning_rate)
     optimizer = tf.train.AdamOptimizer(learning_rate)
 
@@ -72,7 +74,7 @@ def build(optimizer_config):
   return optimizer, summary_vars
 
 
-def _create_learning_rate(learning_rate_config):
+def _create_learning_rate(learning_rate_config, num_train_steps):
   """Create optimizer learning rate based on config.
 
   Args:
@@ -96,10 +98,10 @@ def _create_learning_rate(learning_rate_config):
     learning_rate = learning_schedules.exponential_decay_with_burnin(
         tf.train.get_or_create_global_step(),
         config.initial_learning_rate,
-        config.decay_steps,
+        int(config.decay_steps_pct * num_train_steps),
         config.decay_factor,
         burnin_learning_rate=config.burnin_learning_rate,
-        burnin_steps=config.burnin_steps,
+        burnin_steps=int(config.burnin_steps_pct * num_train_steps),
         min_learning_rate=config.min_learning_rate,
         staircase=config.staircase)
 
@@ -107,7 +109,9 @@ def _create_learning_rate(learning_rate_config):
     config = learning_rate_config.manual_step_learning_rate
     if not config.schedule:
       raise ValueError('Empty learning rate schedule.')
-    learning_rate_step_boundaries = [x.step for x in config.schedule]
+    learning_rate_step_boundaries = [max(i + 1, int(x.step_pct * num_train_steps)) for i, x in enumerate(config.schedule)]
+    assert len(learning_rate_step_boundaries) < num_train_steps, \
+        'Number of schedule boundaries ({}) must be strictly inferior to num_train_steps ({})'.format(len(learning_rate_step_boundaries), num_train_steps)
     learning_rate_sequence = [config.initial_learning_rate]
     learning_rate_sequence += [x.learning_rate for x in config.schedule]
     learning_rate = learning_schedules.manual_stepping(
@@ -119,10 +123,10 @@ def _create_learning_rate(learning_rate_config):
     learning_rate = learning_schedules.cosine_decay_with_warmup(
         tf.train.get_or_create_global_step(),
         config.learning_rate_base,
-        config.total_steps,
+        num_train_steps,
         config.warmup_learning_rate,
-        config.warmup_steps,
-        config.hold_base_rate_steps)
+        int(config.warmup_steps_pct * num_train_steps),
+        int(config.hold_base_rate_steps_pct * num_train_steps))
 
   if learning_rate is None:
     raise ValueError('Learning_rate %s not supported.' % learning_rate_type)

@@ -354,6 +354,7 @@ def create_model_fn(detection_model_fn, configs, hparams, use_tpu=False,
       # TODO(rathodv): Stop creating optimizer summary vars in EVAL mode once we
       # can write learning rate summaries on TPU without host calls.
       global_step = tf.train.get_or_create_global_step()
+      # TODO: add num_train_steps argument if needed in optimizer_builder tests
       training_optimizer, optimizer_summary_vars = optimizer_builder.build(
           train_config.optimizer)
 
