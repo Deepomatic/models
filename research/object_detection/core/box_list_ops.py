@@ -95,7 +95,7 @@ def scale(boxlist, y_scale, x_scale, scope=None):
     y_max = y_scale * y_max
     x_min = x_scale * x_min
     x_max = x_scale * x_max
-    scaled_boxlist = box_list.BoxList(
+    scaled_boxlist = boxlist.__class__(
         tf.concat([y_min, x_min, y_max, x_max], 1))
     return _copy_extra_fields(scaled_boxlist, boxlist)
 
@@ -126,7 +126,7 @@ def clip_to_window(boxlist, window, filter_nonoverlapping=True, scope=None):
     y_max_clipped = tf.maximum(tf.minimum(y_max, win_y_max), win_y_min)
     x_min_clipped = tf.maximum(tf.minimum(x_min, win_x_max), win_x_min)
     x_max_clipped = tf.maximum(tf.minimum(x_max, win_x_max), win_x_min)
-    clipped = box_list.BoxList(
+    clipped = box_list.__class__(
         tf.concat([y_min_clipped, x_min_clipped, y_max_clipped, x_max_clipped],
                   1))
     clipped = _copy_extra_fields(clipped, boxlist)

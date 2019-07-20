@@ -37,43 +37,16 @@ Some other notes:
 import tensorflow as tf
 
 
-class BoxList(object):
-  """Box collection."""
+class BaseBoxList(object):
+  """Base classs for box collection."""
 
-  def __init__(self, boxes):
-    """Constructs box collection.
+  def __init__(self, data):
+    """Constructs bas collection.
 
     Args:
-      boxes: a tensor of shape [N, 4] representing box corners
-
-    Raises:
-      ValueError: if invalid dimensions for bbox data or if bbox data is not in
-          float32 format.
+      data: a dict of data
     """
-    if len(boxes.get_shape()) != 2 or boxes.get_shape()[-1] != 4:
-      raise ValueError('Invalid dimensions for box data.')
-    if boxes.dtype != tf.float32:
-      raise ValueError('Invalid tensor type: should be tf.float32')
-    self.data = {'boxes': boxes}
-
-  def num_boxes(self):
-    """Returns number of boxes held in collection.
-
-    Returns:
-      a tensor representing the number of boxes held in the collection.
-    """
-    return tf.shape(self.data['boxes'])[0]
-
-  def num_boxes_static(self):
-    """Returns number of boxes held in collection.
-
-    This number is inferred at graph construction time rather than run-time.
-
-    Returns:
-      Number of boxes held in collection (integer) or None if this is not
-        inferrable at graph construction time.
-    """
-    return self.data['boxes'].get_shape()[0].value
+    self.data = data
 
   def get_all_fields(self):
     """Returns all fields."""
@@ -105,19 +78,6 @@ class BoxList(object):
       a tensor with shape [N, 4] representing box coordinates.
     """
     return self.get_field('boxes')
-
-  def set(self, boxes):
-    """Convenience function for setting box coordinates.
-
-    Args:
-      boxes: a tensor of shape [N, 4] representing box corners
-
-    Raises:
-      ValueError: if invalid dimensions for bbox data
-    """
-    if len(boxes.get_shape()) != 2 or boxes.get_shape()[-1] != 4:
-      raise ValueError('Invalid dimensions for box data.')
-    self.data['boxes'] = boxes
 
   def get_field(self, field):
     """Accesses a box collection and associated fields.
@@ -155,6 +115,82 @@ class BoxList(object):
       raise ValueError('field %s does not exist' % field)
     self.data[field] = value
 
+  def as_tensor_dict(self, fields=None):
+    """Retrieves specified fields as a dictionary of tensors.
+
+    Args:
+      fields: (optional) list of fields to return in the dictionary.
+        If None (default), all fields are returned.
+
+    Returns:
+      tensor_dict: A dictionary of tensors specified by fields.
+
+    Raises:
+      ValueError: if specified field is not contained in boxlist.
+    """
+    tensor_dict = {}
+    if fields is None:
+      fields = self.get_all_fields()
+    for field in fields:
+      if not self.has_field(field):
+        raise ValueError('boxlist must contain all specified fields')
+      tensor_dict[field] = self.get_field(field)
+    return tensor_dict
+
+
+###############################################################################
+
+class BoxList(BaseBoxList):
+  """Box collection."""
+
+  def __init__(self, boxes):
+    """Constructs box collection.
+
+    Args:
+      boxes: a tensor of shape [N, 4] representing box corners
+
+    Raises:
+      ValueError: if invalid dimensions for bbox data or if bbox data is not in
+          float32 format.
+    """
+    if len(boxes.get_shape()) != 2 or boxes.get_shape()[-1] != 4:
+      raise ValueError('Invalid dimensions for box data.')
+    if boxes.dtype != tf.float32:
+      raise ValueError('Invalid tensor type: should be tf.float32')
+    super(BoxList, self).__init__({'boxes': boxes})
+
+  def num_boxes(self):
+    """Returns number of boxes held in collection.
+
+    Returns:
+      a tensor representing the number of boxes held in the collection.
+    """
+    return tf.shape(self.data['boxes'])[0]
+
+  def num_boxes_static(self):
+    """Returns number of boxes held in collection.
+
+    This number is inferred at graph construction time rather than run-time.
+
+    Returns:
+      Number of boxes held in collection (integer) or None if this is not
+        inferrable at graph construction time.
+    """
+    return self.data['boxes'].get_shape()[0].value
+
+  def set(self, boxes):
+    """Convenience function for setting box coordinates.
+
+    Args:
+      boxes: a tensor of shape [N, 4] representing box corners
+
+    Raises:
+      ValueError: if invalid dimensions for bbox data
+    """
+    if len(boxes.get_shape()) != 2 or boxes.get_shape()[-1] != 4:
+      raise ValueError('Invalid dimensions for box data.')
+    self.data['boxes'] = boxes
+
   def get_center_coordinates_and_sizes(self, scope=None):
     """Computes the center coordinates, height and width of the boxes.
 
@@ -184,24 +220,27 @@ class BoxList(object):
           value=self.get(), num_or_size_splits=4, axis=1)
       self.set(tf.concat([x_min, y_min, x_max, y_max], 1))
 
-  def as_tensor_dict(self, fields=None):
-    """Retrieves specified fields as a dictionary of tensors.
+###############################################################################
+
+class MultiImageBoxList(BaseBoxList):
+  """
+  Box collection across multiple images: used for compatibility with BoxList to use
+  function from box_list_ops. WARNING: you need to make sure that the function you use
+  are compatible with tensors of size [N, B, 4].
+  """
+
+  def __init__(self, boxes):
+    """Constructs box collection.
 
     Args:
-      fields: (optional) list of fields to return in the dictionary.
-        If None (default), all fields are returned.
-
-    Returns:
-      tensor_dict: A dictionary of tensors specified by fields.
+      boxes: a tensor of shape [N, B, 4] representing box corners
 
     Raises:
-      ValueError: if specified field is not contained in boxlist.
+      ValueError: if invalid dimensions for bbox data or if bbox data is not in
+          float32 format.
     """
-    tensor_dict = {}
-    if fields is None:
-      fields = self.get_all_fields()
-    for field in fields:
-      if not self.has_field(field):
-        raise ValueError('boxlist must contain all specified fields')
-      tensor_dict[field] = self.get_field(field)
-    return tensor_dict
+    if len(boxes.get_shape()) != 3 or boxes.get_shape()[-1] != 4:
+      raise ValueError('Invalid dimensions for multi image box data.')
+    if boxes.dtype != tf.float32:
+      raise ValueError('Invalid tensor type: should be tf.float32')
+    super(BoxList, self).__init__({'boxes': boxes})
