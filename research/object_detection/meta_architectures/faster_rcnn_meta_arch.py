@@ -693,7 +693,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
 
     return prediction_dict
 
-  def _image_batch_shape_2d(self, image_batch_shape_1d):
+  def _image_batch_shape_2d(self, image_batch_shape_1d, batch_size):
     """Takes a 1-D image batch shape tensor and converts it to a 2-D tensor.
 
     Example:
@@ -703,13 +703,16 @@ class FasterRCNNMetaArch(model.DetectionModel):
     Args:
       image_batch_shape_1d: 1-D tensor of the form [batch_size, height,
         width, channels].
+      batch_size (int32): the batch_size, may be a scalar or None
 
     Returns:
       image_batch_shape_2d: 2-D tensor of shape [batch_size, 3] were each row is
         of the form [height, width, channels].
     """
+    if batch_size is None:
+      batch_size = image_batch_shape_1d[0]
     return tf.tile(tf.expand_dims(image_batch_shape_1d[1:], 0),
-                   [image_batch_shape_1d[0], 1])
+                   [batch_size, 1])
 
   def _predict_second_stage(self, rpn_box_encodings,
                             rpn_objectness_predictions_with_background,
@@ -769,7 +772,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
         6) box_classifier_features: a 4-D float32 or bfloat16 tensor
           representing the features for each proposal.
     """
-    image_shape_2d = self._image_batch_shape_2d(image_shape)
+    image_shape_2d = self._image_batch_shape_2d(image_shape, true_image_shapes.get_shape().as_list()[0])
     proposal_boxes_normalized, _, num_proposals, _, _ = self._postprocess_rpn(
         rpn_box_encodings, rpn_objectness_predictions_with_background,
         anchors, image_shape_2d, true_image_shapes)
@@ -1305,19 +1308,14 @@ class FasterRCNNMetaArch(model.DetectionModel):
              groundtruth_boxlists, groundtruth_classes_with_background_list,
              groundtruth_weights_list)
     # normalize proposal boxes
-    def normalize_boxes(args):
-      proposal_boxes_per_image = args[0]
-      image_shape = args[1]
-      normalized_boxes_per_image = box_list_ops.to_normalized_coordinates(
-          box_list.BoxList(proposal_boxes_per_image), image_shape[0],
-          image_shape[1], check_range=False).get()
-      return normalized_boxes_per_image
-    normalized_proposal_boxes = shape_utils.static_or_dynamic_map_fn(
-        normalize_boxes, elems=[proposal_boxes, image_shapes], dtype=tf.float32)
-    raw_normalized_proposal_boxes = shape_utils.static_or_dynamic_map_fn(
-        normalize_boxes,
-        elems=[raw_proposal_boxes, image_shapes],
-        dtype=tf.float32)
+    height, width, depth = tf.split(image_shapes, num_or_size_splits=3, axis=1)
+    height = tf.expand_dims(height, axis=1)
+    width = tf.expand_dims(width, axis=1)
+    def normalize_boxes(all_boxes):
+      return box_list_ops.to_normalized_coordinates(
+        box_list.BatchBoxList(all_boxes), height, width, check_range=False).get()
+    normalized_proposal_boxes = normalize_boxes(proposal_boxes)
+    raw_normalized_proposal_boxes = normalize_boxes(raw_proposal_boxes)
     return (normalized_proposal_boxes, proposal_scores, num_proposals,
             raw_normalized_proposal_boxes,
             rpn_objectness_predictions_with_background_batch)
@@ -1645,27 +1643,23 @@ class FasterRCNNMetaArch(model.DetectionModel):
     else:
       raw_detection_boxes = tf.squeeze(refined_decoded_boxes_batch, axis=2)
 
-    def normalize_and_clip_boxes(args):
-      """Normalize and clip boxes."""
-      boxes_per_image = args[0]
-      image_shape = args[1]
-      normalized_boxes_per_image = box_list_ops.to_normalized_coordinates(
-          box_list.BoxList(boxes_per_image),
-          image_shape[0],
-          image_shape[1],
-          check_range=False).get()
+    height, width, _ = tf.split(image_shapes, num_or_size_splits=3, axis=1)
+    height = tf.expand_dims(height, axis=1)
+    width = tf.expand_dims(width, axis=1)
+    def normalize_and_clip_boxes(all_boxes):
+      normalized_all_boxes = box_list_ops.to_normalized_coordinates(
+          box_list.BatchBoxList(all_boxes),
+          height, width,
+          check_range=False)
 
-      normalized_boxes_per_image = box_list_ops.clip_to_window(
-          box_list.BoxList(normalized_boxes_per_image),
+      normalized_all_boxes = box_list_ops.clip_to_window(
+          normalized_all_boxes,
           tf.constant([0.0, 0.0, 1.0, 1.0], tf.float32),
           filter_nonoverlapping=False).get()
 
-      return normalized_boxes_per_image
+      return normalized_all_boxes
 
-    raw_normalized_detection_boxes = shape_utils.static_or_dynamic_map_fn(
-        normalize_and_clip_boxes,
-        elems=[raw_detection_boxes, image_shapes],
-        dtype=tf.float32)
+    raw_normalized_detection_boxes = normalize_and_clip_boxes(raw_detection_boxes)
 
     detections = {
         fields.DetectionResultFields.detection_boxes:

@@ -34,6 +34,17 @@ class BoxListOpsTest(test_case.TestCase):
       areas_output = sess.run(areas)
       self.assertAllClose(areas_output, exp_output)
 
+  def test_area_batch(self):
+    corners = tf.constant([[[0.0, 0.0, 10.0, 20.0], [1.0, 2.0, 3.0, 4.0]],
+                           [[5.0, 10.0, 10.0, 20.0], [1.0, 2.0, 3.0, 4.0]]])
+    exp_output = [[200.0, 4.0],
+                  [50.0, 4.0]]
+    boxes = box_list.BatchBoxList(corners)
+    areas = box_list_ops.area(boxes)
+    with self.test_session() as sess:
+      areas_output = sess.run(areas)
+      self.assertAllClose(areas_output, exp_output)
+
   def test_height_width(self):
     corners = tf.constant([[0.0, 0.0, 10.0, 20.0], [1.0, 2.0, 3.0, 4.0]])
     exp_output_heights = [10., 2.]
@@ -60,6 +71,26 @@ class BoxListOpsTest(test_case.TestCase):
       self.assertAllClose(scaled_corners_out, exp_output)
       extra_data_out = sess.run(scaled_boxes.get_field('extra_data'))
       self.assertAllEqual(extra_data_out, [[1], [2]])
+
+  def test_scale_batch(self):
+    corners = tf.constant([[[0, 0, 100, 200], [50, 120, 100, 140]],
+                           [[100, 100, 300, 400], [50, 120, 100, 140]]],
+                          dtype=tf.float32)
+    boxes = box_list.BatchBoxList(corners)
+    boxes.add_field('extra_data', tf.constant([[[1], [2]],
+                                               [[3], [4]]]))
+
+    y_scale = tf.constant(1.0/100)
+    x_scale = tf.constant(1.0/200)
+    scaled_boxes = box_list_ops.scale(boxes, y_scale, x_scale)
+    exp_output = [[[0, 0, 1, 1], [0.5, 0.6, 1.0, 0.7]],
+                  [[1, 0.5, 3, 2], [0.5, 0.6, 1.0, 0.7]]]
+    with self.test_session() as sess:
+      scaled_corners_out = sess.run(scaled_boxes.get())
+      self.assertAllClose(scaled_corners_out, exp_output)
+      extra_data_out = sess.run(scaled_boxes.get_field('extra_data'))
+      self.assertAllEqual(extra_data_out, [[[1], [2]],
+                                           [[3], [4]]])
 
   def test_clip_to_window_filter_boxes_which_fall_outside_the_window(
       self):
@@ -104,6 +135,35 @@ class BoxListOpsTest(test_case.TestCase):
       self.assertAllClose(pruned_output, exp_output)
       extra_data_out = sess.run(pruned.get_field('extra_data'))
       self.assertAllEqual(extra_data_out, [[1], [2], [3], [4], [5], [6]])
+
+  def test_clip_to_window_without_filtering_boxes_which_fall_outside_the_window_batch(
+      self):
+    window = tf.constant([[0, 0, 9, 14], [1, 1, 8, 13]], tf.float32)
+    corners = tf.constant([[5.0, 5.0, 6.0, 6.0],
+                           [-1.0, -2.0, 4.0, 5.0],
+                           [2.0, 3.0, 5.0, 9.0],
+                           [0.0, 0.0, 9.0, 14.0],
+                           [-100.0, -100.0, 300.0, 600.0],
+                           [-10.0, -10.0, -9.0, -9.0]])
+    corners = tf.tile(tf.expand_dims(corners, axis=0), [2, 1, 1])
+
+    boxes = box_list.BatchBoxList(corners)
+    boxes.add_field('extra_data', tf.constant([[[1], [2], [3], [4], [5], [6]],
+                                               [[1], [2], [3], [4], [5], [6]]]))
+    exp_output = [[[5.0, 5.0, 6.0, 6.0], [0.0, 0.0, 4.0, 5.0],
+                   [2.0, 3.0, 5.0, 9.0], [0.0, 0.0, 9.0, 14.0],
+                   [0.0, 0.0, 9.0, 14.0], [0.0, 0.0, 0.0, 0.0]],
+                  [[5.0, 5.0, 6.0, 6.0], [1.0, 1.0, 4.0, 5.0],
+                   [2.0, 3.0, 5.0, 9.0], [1.0, 1.0, 8.0, 13.0],
+                   [1.0, 1.0, 8.0, 13.0], [1.0, 1.0, 1.0, 1.0]]]
+    pruned = box_list_ops.clip_to_window(
+        boxes, window, filter_nonoverlapping=False)
+    with self.test_session() as sess:
+      pruned_output = sess.run(pruned.get())
+      self.assertAllClose(pruned_output, exp_output)
+      extra_data_out = sess.run(pruned.get_field('extra_data'))
+      self.assertAllEqual(extra_data_out, [[[1], [2], [3], [4], [5], [6]],
+                                           [[1], [2], [3], [4], [5], [6]]])
 
   def test_prune_outside_window_filters_boxes_which_fall_outside_the_window(
       self):
@@ -906,6 +966,20 @@ class CoordinatesConversionTest(tf.test.TestCase):
         boxlist, tf.shape(img)[1], tf.shape(img)[2])
     expected_boxes = [[0, 0, 1, 1],
                       [0.25, 0.25, 0.75, 0.75]]
+
+    with self.test_session() as sess:
+      normalized_boxes = sess.run(normalized_boxlist.get())
+      self.assertAllClose(normalized_boxes, expected_boxes)
+
+  def test_to_normalized_coordinates_batch(self):
+    coordinates = tf.constant([[[0, 0, 100, 100], [25, 25, 75, 75]],
+                               [[100, 200, 200, 400], [25, 25, 75, 75]]], tf.float32)
+    img = tf.ones((2, 100, 100, 3))
+    boxlist = box_list.BatchBoxList(coordinates)
+    normalized_boxlist = box_list_ops.to_normalized_coordinates(
+        boxlist, tf.shape(img)[1], tf.shape(img)[2])
+    expected_boxes = [[[0, 0, 1, 1], [0.25, 0.25, 0.75, 0.75]],
+                      [[1, 2, 2, 4], [0.25, 0.25, 0.75, 0.75]]]
 
     with self.test_session() as sess:
       normalized_boxes = sess.run(normalized_boxlist.get())
