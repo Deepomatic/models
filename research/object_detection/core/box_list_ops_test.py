@@ -1104,5 +1104,8 @@ class BoxRefinementTest(tf.test.TestCase):
       self.assertAllGreater(np_iou_max, 0.5)
 
 
+## Add tests for MultiImageBoxList on: scale, to_normalized_coordinates, clip_to_window (with filter_nonoverlapping=False),
+## and maybe: area, clip_to_window (with filter_nonoverlapping=True)
+
 if __name__ == '__main__':
   tf.test.main()

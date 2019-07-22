@@ -49,12 +49,11 @@ def area(boxlist, scope=None):
     scope: name scope.
 
   Returns:
-    a tensor with shape [N] representing box areas.
+    a tensor with shape [B, N] or [B] representing box areas.
   """
   with tf.name_scope(scope, 'Area'):
-    y_min, x_min, y_max, x_max = tf.split(
-        value=boxlist.get(), num_or_size_splits=4, axis=1)
-    return tf.squeeze((y_max - y_min) * (x_max - x_min), [1])
+    y_min, x_min, y_max, x_max = boxlist.split_coords()
+    return tf.squeeze((y_max - y_min) * (x_max - x_min), [len(boxlist.get().shape) - 1])
 
 
 def height_width(boxlist, scope=None):
@@ -89,14 +88,12 @@ def scale(boxlist, y_scale, x_scale, scope=None):
   with tf.name_scope(scope, 'Scale'):
     y_scale = tf.cast(y_scale, tf.float32)
     x_scale = tf.cast(x_scale, tf.float32)
-    y_min, x_min, y_max, x_max = tf.split(
-        value=boxlist.get(), num_or_size_splits=4, axis=1)
+    y_min, x_min, y_max, x_max = boxlist.split_coords()
     y_min = y_scale * y_min
     y_max = y_scale * y_max
     x_min = x_scale * x_min
     x_max = x_scale * x_max
-    scaled_boxlist = boxlist.__class__(
-        tf.concat([y_min, x_min, y_max, x_max], 1))
+    scaled_boxlist = boxlist.concat_coords(y_min, x_min, y_max, x_max)
     return _copy_extra_fields(scaled_boxlist, boxlist)
 
 
@@ -119,16 +116,13 @@ def clip_to_window(boxlist, window, filter_nonoverlapping=True, scope=None):
     a BoxList holding M_out boxes where M_out <= M_in
   """
   with tf.name_scope(scope, 'ClipToWindow'):
-    y_min, x_min, y_max, x_max = tf.split(
-        value=boxlist.get(), num_or_size_splits=4, axis=1)
+    y_min, x_min, y_max, x_max = boxlist.split_coords()
     win_y_min, win_x_min, win_y_max, win_x_max = tf.unstack(window)
     y_min_clipped = tf.maximum(tf.minimum(y_min, win_y_max), win_y_min)
     y_max_clipped = tf.maximum(tf.minimum(y_max, win_y_max), win_y_min)
     x_min_clipped = tf.maximum(tf.minimum(x_min, win_x_max), win_x_min)
     x_max_clipped = tf.maximum(tf.minimum(x_max, win_x_max), win_x_min)
-    clipped = box_list.__class__(
-        tf.concat([y_min_clipped, x_min_clipped, y_max_clipped, x_max_clipped],
-                  1))
+    clipped = boxlist.concat_coords(y_min_clipped, x_min_clipped, y_max_clipped, x_max_clipped)
     clipped = _copy_extra_fields(clipped, boxlist)
     if filter_nonoverlapping:
       areas = area(clipped)
@@ -792,7 +786,7 @@ def to_normalized_coordinates(boxlist, height, width,
     width = tf.cast(width, tf.float32)
 
     if check_range:
-      max_val = tf.reduce_max(boxlist.get())
+      max_val = boxlist.reduce_max()
       max_assert = tf.Assert(tf.greater(max_val, 1.01),
                              ['max value is lower than 1.01: ', max_val])
       with tf.control_dependencies([max_assert]):

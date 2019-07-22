@@ -1633,19 +1633,19 @@ class FasterRCNNMetaArch(model.DetectionModel):
 
     if not self._apply_final_nms:
       height, width, depth = tf.split(image_shapes, num_or_size_splits=3, axis=1)
-      def normalize_and_clip_boxes(boxes_per_image):
+      def normalize_and_clip_boxes(all_boxes):
         """Normalize and clip boxes."""
         with tf.name_scope(None, 'NormalizeAndClipBoxes'):
-          normalized_boxes_per_image = box_list_ops.to_normalized_coordinates(
-              box_list.MultiImageBoxList(boxes_per_image),
+          normalized_all_boxes = box_list_ops.to_normalized_coordinates(
+              box_list.MultiImageBoxList(all_boxes),
               height, width,
-              check_range=False).get()
+              check_range=False)
 
-          normalized_boxes_per_image = box_list_ops.clip_to_window(
-              box_list.MultiImageBoxList(normalized_boxes_per_image),
+          normalized_all_boxes = box_list_ops.clip_to_window(
+              normalized_all_boxes,
               tf.constant([0.0, 0.0, 1.0, 1.0], tf.float32),
               filter_nonoverlapping=False).get()
-          return normalized_boxes_per_image
+          return normalized_all_boxes
       detections = {
         fields.DetectionResultFields.detection_boxes: normalize_and_clip_boxes(raw_detection_boxes),
         fields.DetectionResultFields.detection_scores: class_predictions_with_background_batch

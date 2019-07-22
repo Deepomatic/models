@@ -40,13 +40,21 @@ import tensorflow as tf
 class BaseBoxList(object):
   """Base classs for box collection."""
 
-  def __init__(self, data):
+  # Sets the dimension for the B boxes. The next dimension has to be of size 4
+  BOX_DIMENSION_OFFSET = None
+
+  def __init__(self, boxes):
     """Constructs bas collection.
 
     Args:
-      data: a dict of data
+      boxes: either a NxBx4 or a Bx4 box tensor
     """
-    self.data = data
+    coord_dimension = self.BOX_DIMENSION_OFFSET + 1
+    if boxes.get_shape()[coord_dimension] != 4:
+      raise ValueError('Invalid dimensions for box data: expecting dimension {} to be 4'.format(coord_dimension))
+    if boxes.dtype != tf.float32:
+      raise ValueError('Invalid tensor type: should be tf.float32')
+    self.data = {'boxes': boxes}
 
   def get_all_fields(self):
     """Returns all fields."""
@@ -137,11 +145,33 @@ class BaseBoxList(object):
       tensor_dict[field] = self.get_field(field)
     return tensor_dict
 
+  def split_coords(self):
+    """
+    Split the box list into y_min, x_min, y_max, x_max tensors.
+    Typical use: `y_min, x_min, y_max, x_max = boxlist.split_coords()`
+    """
+    return tf.split(value=self.get(), num_or_size_splits=4, axis=self.BOX_DIMENSION_OFFSET + 1)
+
+  @classmethod
+  def concat_coords(cls, y_min, x_min, y_max, x_max):
+    """
+    Concatenate coord tensors into a box list of the same class
+    """
+    return cls(tf.concat([y_min, x_min, y_max, x_max], axis=cls.BOX_DIMENSION_OFFSET + 1))
+
+  def reduce_max(self):
+    """
+    Compute the maximum value across all boxes
+    Typical use: `max_value = boxlist.reduce_max()`
+    """
+    return tf.reduce_max(self.get(), axis=self.BOX_DIMENSION_OFFSET)
 
 ###############################################################################
 
 class BoxList(BaseBoxList):
   """Box collection."""
+
+  BOX_DIMENSION_OFFSET = 0
 
   def __init__(self, boxes):
     """Constructs box collection.
@@ -153,11 +183,9 @@ class BoxList(BaseBoxList):
       ValueError: if invalid dimensions for bbox data or if bbox data is not in
           float32 format.
     """
-    if len(boxes.get_shape()) != 2 or boxes.get_shape()[-1] != 4:
+    if len(boxes.get_shape()) != 2:
       raise ValueError('Invalid dimensions for box data.')
-    if boxes.dtype != tf.float32:
-      raise ValueError('Invalid tensor type: should be tf.float32')
-    super(BoxList, self).__init__({'boxes': boxes})
+    super(BoxList, self).__init__(boxes)
 
   def num_boxes(self):
     """Returns number of boxes held in collection.
@@ -229,6 +257,8 @@ class MultiImageBoxList(BaseBoxList):
   are compatible with tensors of size [N, B, 4].
   """
 
+  BOX_DIMENSION_OFFSET = 1
+
   def __init__(self, boxes):
     """Constructs box collection.
 
@@ -239,8 +269,6 @@ class MultiImageBoxList(BaseBoxList):
       ValueError: if invalid dimensions for bbox data or if bbox data is not in
           float32 format.
     """
-    if len(boxes.get_shape()) != 3 or boxes.get_shape()[-1] != 4:
+    if len(boxes.get_shape()) != 3:
       raise ValueError('Invalid dimensions for multi image box data.')
-    if boxes.dtype != tf.float32:
-      raise ValueError('Invalid tensor type: should be tf.float32')
-    super(BoxList, self).__init__({'boxes': boxes})
+    super(MultiImageBoxList, self).__init__(boxes)
