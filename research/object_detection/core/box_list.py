@@ -44,7 +44,7 @@ class BaseBoxList(object):
   BOX_DIMENSION_OFFSET = None
 
   def __init__(self, boxes):
-    """Constructs bas collection.
+    """Constructs box collection.
 
     Args:
       boxes: either a NxBx4 or a Bx4 box tensor
