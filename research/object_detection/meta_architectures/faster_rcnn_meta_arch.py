@@ -774,7 +774,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
     image_shape_2d = self._image_batch_shape_2d(image_shape)
     proposal_boxes_normalized, _, num_proposals = self._postprocess_rpn(
         rpn_box_encodings, rpn_objectness_predictions_with_background,
-        anchors, image_shape_2d, true_image_shapes, is_final_stage=False)
+        anchors, image_shape_2d, true_image_shapes)
 
     # If mixed-precision training on TPU is enabled, the dtype of
     # rpn_features_to_crop is bfloat16, otherwise it is float32. tf.cast is
@@ -1148,12 +1148,12 @@ class FasterRCNNMetaArch(model.DetectionModel):
       ValueError: If `predict` is called before `preprocess`.
     """
 
-    with tf.name_scope('FirstStagePostprocessor'):
-      if self._number_of_stages == 1:
+    if self._number_of_stages == 1:
+      with tf.name_scope('FirstStagePostprocessor'):
         (proposal_boxes, proposal_scores, num_proposals) = self._postprocess_rpn(
              prediction_dict['rpn_box_encodings'],
              prediction_dict['rpn_objectness_predictions_with_background'],
-             prediction_dict['anchors'], true_image_shapes, true_image_shapes)
+             prediction_dict['anchors'], true_image_shapes, true_image_shapes, is_final_stage=True)
         return {
             fields.DetectionResultFields.detection_boxes:
                 proposal_boxes,
@@ -1174,7 +1174,8 @@ class FasterRCNNMetaArch(model.DetectionModel):
             prediction_dict['proposal_boxes'],
             prediction_dict['num_proposals'],
             true_image_shapes,
-            mask_predictions=mask_predictions)
+            mask_predictions=mask_predictions,
+            is_final_stage=True)
 
       if 'rpn_features_to_crop' in prediction_dict and self._initial_crop_size:
         self._add_detection_features_output_node(
@@ -1229,7 +1230,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
                        anchors,
                        image_shapes,
                        true_image_shapes,
-                       is_final_stage=True):
+                       is_final_stage=False):
     """Converts first stage prediction tensors from the RPN to proposals.
 
     This function decodes the raw RPN predictions, runs non-max suppression
@@ -1553,7 +1554,8 @@ class FasterRCNNMetaArch(model.DetectionModel):
                                   proposal_boxes,
                                   num_proposals,
                                   image_shapes,
-                                  mask_predictions=None):
+                                  mask_predictions=None,
+                                  is_final_stage=False):
     """Converts predictions from the second stage box classifier to detections.
 
     Args:
@@ -1632,7 +1634,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
     else:
       raw_detection_boxes = tf.squeeze(refined_decoded_boxes_batch, axis=2)
 
-    if not self._apply_final_nms:
+    if is_final_stage and not self._apply_final_nms:
       height, width, depth = tf.split(image_shapes, num_or_size_splits=3, axis=1)
       def normalize_and_clip_boxes(all_boxes):
         """Normalize and clip boxes."""
