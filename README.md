@@ -1,5 +1,9 @@
 ![Logo](https://storage.googleapis.com/model_garden_artifacts/TF_Model_Garden.png)
 
+# Running tests
+
+Run `make` and, once in docker, launch `py.test object_detection`
+
 # Welcome to the Model Garden for TensorFlow
 
 The TensorFlow Model Garden is a repository with a number of different implementations of state-of-the-art (SOTA) models and modeling solutions for TensorFlow users. We aim to demonstrate the best practices for modeling so that TensorFlow users
