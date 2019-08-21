@@ -31,17 +31,15 @@ RUN cd /tmp && \
 
 
 ADD . /app
-WORKDIR /app
+WORKDIR /app/research
 
-RUN cd research && \
-    protoc object_detection/protos/*.proto --python_out=. && \
+RUN protoc object_detection/protos/*.proto --python_out=. && \
     cd slim && \
     python setup.py sdist && \
     pip install dist/slim-0.1.tar.gz
 
 # Do not use --ignore pytest flag: it will make tests crash. Instead, we remove unwanted files
-RUN cd research && \
-    py.test object_detection/dataset_tools/create_pascal_tf_record_test.py && \
+RUN py.test object_detection/dataset_tools/create_pascal_tf_record_test.py && \
     rm object_detection/dataset_tools/create_pascal_tf_record_test.py && \
     rm object_detection/builders/dataset_builder_test.py && \
     rm object_detection/inference/detection_inference_test.py && \
