@@ -30,21 +30,23 @@ RUN cd /tmp && \
     pip install dist/pycocotools-2.0.tar.gz
 
 
-ADD . /app
-WORKDIR /app/research
+ADD research /app
+WORKDIR /app
 
 RUN protoc object_detection/protos/*.proto --python_out=. && \
     cd slim && \
     python setup.py sdist && \
     pip install dist/slim-0.1.tar.gz
 
+WORKDIR /app/object_detection
+
 # Do not use --ignore pytest flag: it will make tests crash. Instead, we remove unwanted files
-RUN py.test object_detection/dataset_tools/create_pascal_tf_record_test.py && \
-    rm object_detection/dataset_tools/create_pascal_tf_record_test.py && \
-    rm object_detection/builders/dataset_builder_test.py && \
-    rm object_detection/inference/detection_inference_test.py && \
-    rm object_detection/models/ssd_resnet_v1_fpn_feature_extractor_test.py
+RUN py.test dataset_tools/create_pascal_tf_record_test.py && \
+    rm dataset_tools/create_pascal_tf_record_test.py && \
+    rm builders/dataset_builder_test.py && \
+    rm inference/detection_inference_test.py && \
+    rm models/ssd_resnet_v1_fpn_feature_extractor_test.py
 
 FROM base
 
-RUN py.test object_detection
+RUN py.test .
