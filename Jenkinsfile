@@ -10,5 +10,6 @@ node {
                   userRemoteConfigs: scm.userRemoteConfigs])
 
         docker.build 'models:${BUILD_TAG}'
+        docker.run 'models:${BUILD_TAG}'
     }
 }
