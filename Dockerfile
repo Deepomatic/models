@@ -46,5 +46,3 @@ RUN cd research && \
     rm object_detection/builders/dataset_builder_test.py && \
     rm object_detection/inference/detection_inference_test.py && \
     rm object_detection/models/ssd_resnet_v1_fpn_feature_extractor_test.py
-
-CMD ["py.test", "object_detection"]
