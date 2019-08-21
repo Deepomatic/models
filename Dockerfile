@@ -1,4 +1,4 @@
-FROM tensorflow/tensorflow:1.12.0-devel
+FROM tensorflow/tensorflow:1.12.0-devel as base
 
 RUN pip install pytest==4.6.4 contextlib2==0.5.5 lxml==4.3.4
 
@@ -46,3 +46,7 @@ RUN cd research && \
     rm object_detection/builders/dataset_builder_test.py && \
     rm object_detection/inference/detection_inference_test.py && \
     rm object_detection/models/ssd_resnet_v1_fpn_feature_extractor_test.py
+
+FROM base
+
+RUN py.test object_detection
