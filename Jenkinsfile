@@ -10,6 +10,7 @@ node {
                   userRemoteConfigs: scm.userRemoteConfigs])
 
         docker.build 'models:${BUILD_TAG}'
+        sh 'ls'
         docker.build('models_test:${BUILD_TAG}', "--build-arg BASE_IMAGE=models:${BUILD_TAG} -f Dockerfile.cmd .")
     }
 }
