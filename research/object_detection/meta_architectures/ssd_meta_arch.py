@@ -720,7 +720,7 @@ class SSDMetaArch(model.DetectionModel):
           fields.DetectionResultFields.raw_detection_boxes:
               tf.squeeze(detection_boxes, axis=2),
           fields.DetectionResultFields.raw_detection_scores:
-              class_predictions
+              detection_scores
       }
       if (nmsed_additional_fields is not None and
           fields.BoxListFields.keypoints in nmsed_additional_fields):

@@ -1166,7 +1166,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
             fields.DetectionResultFields.raw_detection_boxes:
                 raw_proposal_boxes,
             fields.DetectionResultFields.raw_detection_scores:
-                raw_proposal_scores
+              tf.slice(self._second_stage_score_conversion_fn(raw_proposal_scores), [0, 0, 1], [-1, -1, -1])
         }
 
     # TODO(jrru): Remove mask_predictions from _post_process_box_classifier.
@@ -1673,7 +1673,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
         fields.DetectionResultFields.raw_detection_boxes:
             raw_normalized_detection_boxes,
         fields.DetectionResultFields.raw_detection_scores:
-            class_predictions_with_background_batch
+            tf.slice(class_predictions_with_background_batch_normalized, [0, 0, 1], [-1, -1, -1])
     }
     if nmsed_masks is not None:
       detections[fields.DetectionResultFields.detection_masks] = nmsed_masks
