@@ -976,7 +976,7 @@ class FasterRCNNMetaArchTestBase(test_case.TestCase, parameterized.TestCase):
 
     self.assertAllClose(results[4], expected_raw_detection_boxes)
     self.assertAllClose(results[5],
-                        remove_background_class(class_predictions_with_background).reshape([-1, 8, 2]))
+                        remove_background_class(class_predictions_with_background.reshape([-1, 8, num_classes+1])))
     if not use_static_shapes:
       self.assertAllEqual(results[1].shape, [2, 5, 4])
 
