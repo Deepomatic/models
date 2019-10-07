@@ -40,6 +40,11 @@ from object_detection.utils import test_utils
 slim = tf.contrib.slim
 BOX_CODE_SIZE = 4
 
+def remove_background_class(scores):
+  """
+  Remove the first colum which is the background score
+  """
+  return np.array(scores)[:, :, 1:]
 
 class FakeFasterRCNNFeatureExtractor(
     faster_rcnn_meta_arch.FasterRCNNFeatureExtractor):
@@ -779,8 +784,9 @@ class FasterRCNNMetaArchTestBase(test_case.TestCase, parameterized.TestCase):
                                     [0.5, 0., 1., 0.5], [0.5, 0.5, 1., 1.]],
                                    [[0., 0., 0.5, 0.5], [0., 0.5, 0.5, 1.],
                                     [0.5, 0., 1., 0.5], [0.5, 0.5, 1., 1.]]]
-    expected_raw_scores = [[[-10., 13.], [10., -10.], [10., -11.], [-10., 12.]],
-                           [[10., -10.], [-10., 13.], [-10., 12.], [10., -11.]]]
+    expected_raw_scores = remove_background_class(
+                            [[[-10., 13.], [10., -10.], [10., -11.], [-10., 12.]],
+                            [[10., -10.], [-10., 13.], [-10., 12.], [10., -11.]]])
 
     self.assertAllClose(results[0], expected_num_proposals)
     for indx, num_proposals in enumerate(expected_num_proposals):
@@ -847,8 +853,10 @@ class FasterRCNNMetaArchTestBase(test_case.TestCase, parameterized.TestCase):
                                     [0.5, 0., 1., 0.5], [0.5, 0.5, 1., 1.]],
                                    [[0., 0., 0.5, 0.5], [0., 0.5, 0.5, 1.],
                                     [0.5, 0., 1., 0.5], [0.5, 0.5, 1., 1.]]]
-    expected_raw_scores = [[[-10., 13.], [-10., 12.], [-10., 11.], [-10., 10.]],
-                           [[-10., 13.], [-10., 12.], [-10., 11.], [-10., 10.]]]
+    expected_raw_scores = remove_background_class(
+                            [[[-10., 13.], [-10., 12.], [-10., 11.], [-10., 10.]],
+                            [[-10., 13.], [-10., 12.], [-10., 11.], [-10., 10.]]])
+
 
     expected_output_keys = set([
         'detection_boxes', 'detection_scores', 'num_detections',
@@ -968,7 +976,7 @@ class FasterRCNNMetaArchTestBase(test_case.TestCase, parameterized.TestCase):
 
     self.assertAllClose(results[4], expected_raw_detection_boxes)
     self.assertAllClose(results[5],
-                        class_predictions_with_background.reshape([-1, 8, 3]))
+                        remove_background_class(class_predictions_without_background).reshape([-1, 8, 2]))
     if not use_static_shapes:
       self.assertAllEqual(results[1].shape, [2, 5, 4])
 
