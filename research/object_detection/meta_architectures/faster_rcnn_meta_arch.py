@@ -1166,7 +1166,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
             fields.DetectionResultFields.raw_detection_boxes:
                 raw_proposal_boxes,
             fields.DetectionResultFields.raw_detection_scores:
-              tf.slice(self._second_stage_score_conversion_fn(raw_proposal_scores), [0, 0, 1], [-1, -1, -1])
+                tf.slice(self._second_stage_score_conversion_fn(raw_proposal_scores), [0, 0, 1], [-1, -1, -1])
         }
 
     # TODO(jrru): Remove mask_predictions from _post_process_box_classifier.
