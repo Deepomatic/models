@@ -286,8 +286,11 @@ class RFCNMetaArch(faster_rcnn_meta_arch.FasterRCNNMetaArch):
           [batch_size, feature_map_height, feature_map_width, depth],
           representing the box classifier features.
     """
+    batch_size = true_image_shapes.get_shape().as_list()[0]
+    if batch_size is None:
+        batch_size = image_shape[0]
     image_shape_2d = tf.tile(tf.expand_dims(image_shape[1:], 0),
-                             [true_image_shapes.get_shape().as_list()[0], 1])
+                             [batch_size, 1])
     proposal_boxes_normalized, _, num_proposals, _, _ = self._postprocess_rpn(
         rpn_box_encodings, rpn_objectness_predictions_with_background,
         anchors, image_shape_2d, true_image_shapes)
