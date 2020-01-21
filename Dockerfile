@@ -2,7 +2,7 @@ FROM tensorflow/tensorflow:1.15.0 as base
 
 RUN apt update && \
     apt install -y --no-install-recommends git unzip tar g++ make && \
-    pip install pytest==4.6.4 contextlib2==0.5.5 lxml==4.3.4
+    pip install pytest==4.6.4 contextlib2==0.5.5 lxml==4.3.4 Pillow>=1.0 Matplotlib>=2.1 Cython>=0.28.1
 
 # Install protobuf
 RUN cd /tmp && \
