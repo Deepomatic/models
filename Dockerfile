@@ -1,7 +1,7 @@
 FROM tensorflow/tensorflow:1.15.0 as base
 
 RUN apt update && \
-    apt install git unzip tar g++ make && \
+    apt install -y --no-install-recommends git unzip tar g++ make && \
     pip install pytest==4.6.4 contextlib2==0.5.5 lxml==4.3.4
 
 # Install protobuf
