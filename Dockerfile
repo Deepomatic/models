@@ -1,8 +1,15 @@
 FROM tensorflow/tensorflow:1.15.0 as base
 
 RUN apt update && \
-    apt install -y --no-install-recommends git unzip tar g++ make && \
-    pip install pytest==4.6.4 contextlib2==0.5.5 lxml==4.3.4 Pillow>=1.0 Matplotlib>=2.1 Cython>=0.28.1
+    apt install -y --no-install-recommends git unzip tar g++ make python3 python3-pip && \
+    pip3 install pytest==4.6.4 \
+                 contextlib2==0.5.5 \
+                 lxml==4.3.4 \
+                 pandas==0.24.2 \
+                 scipy==1.2.2 \
+                 Pillow>=1.0 \
+                 Matplotlib>=2.1 \
+                 Cython>=0.28.1
 
 # Install protobuf
 RUN cd /tmp && \
@@ -29,7 +36,7 @@ RUN cd /tmp && \
     rm -rf dist && \
     mkdir -p dist && \
     tar -czf dist/pycocotools-2.0.tar.gz -C cocoapi/ PythonAPI/ && \
-    pip install dist/pycocotools-2.0.tar.gz
+    pip3 install dist/pycocotools-2.0.tar.gz
 
 
 ADD research /app
@@ -38,7 +45,7 @@ WORKDIR /app
 RUN protoc object_detection/protos/*.proto --python_out=. && \
     cd slim && \
     python setup.py sdist && \
-    pip install dist/slim-0.1.tar.gz
+    pip3 install dist/slim-0.1.tar.gz
 
 # Do not use --ignore pytest flag: it will make tests crash. Instead, we remove unwanted files
 RUN py.test object_detection/dataset_tools/create_pascal_tf_record_test.py && \
