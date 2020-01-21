@@ -14,7 +14,6 @@ message TrainConfig {
   optional uint32 batch_size = 1 [default=32];
 
   // Data augmentation options.
-  repeated PreprocessingStep data_augmentation_options = 2;
 
   // Whether to synchronize replicas during training.
   optional bool sync_replicas = 3 [default=false];
@@ -30,28 +29,23 @@ message TrainConfig {
 
   // Checkpoint to restore variables from. Typically used to load feature
   // extractor variables trained outside of object detection.
-  optional string fine_tune_checkpoint = 7 [default=""];
 
   // Type of checkpoint to restore variables from, e.g. 'classification' or
   // 'detection'. Provides extensibility to from_detection_checkpoint.
   // Typically used to load feature extractor variables from trained models.
-  optional string fine_tune_checkpoint_type = 22 [default=""];
 
   // [Deprecated]: use fine_tune_checkpoint_type instead.
   // Specifies if the finetune checkpoint is from an object detection model.
   // If from an object detection model, the model being trained should have
   // the same parameters with the exception of the num_classes parameter.
   // If false, it assumes the checkpoint was a object classification model.
-  optional bool from_detection_checkpoint = 8 [default=false, deprecated=true];
 
   // Whether to load all checkpoint vars that match model variable names and
   // sizes. This option is only available if `from_detection_checkpoint` is
   // True.
-  optional bool load_all_detection_checkpoint_vars = 19 [default = false];
 
   // Number of steps to train the DetectionModel for. If 0, will train the model
   // indefinitely.
-  optional uint32 num_steps = 9 [default=0];
 
   // Number of training steps between replica startup.
   // This flag must be set to 0 if sync_replicas is set to true.
@@ -68,7 +62,6 @@ message TrainConfig {
   // Variables that should not be updated during training. If
   // update_trainable_variables is not empty, only eliminates the included
   // variables according to freeze_variables patterns.
-  repeated string freeze_variables = 12;
 
   // Number of replicas to aggregate before making parameter updates.
   optional int32 replicas_to_aggregate = 13 [default=1];
@@ -96,7 +89,6 @@ message TrainConfig {
   // `total_loss`.
   // Setting this option to false is very useful while debugging the model and
   // losses.
-  optional bool add_regularization_loss = 18 [default=true];
 
   // Maximum number of boxes used during training.
   // Set this to at least the maximum amount of boxes in the input data.

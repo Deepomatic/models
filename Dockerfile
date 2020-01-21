@@ -1,6 +1,15 @@
 FROM tensorflow/tensorflow:1.13.2 as base
 
-RUN pip install pytest==4.6.4 contextlib2==0.5.5 lxml==4.3.4
+RUN apt update && \
+    apt install -y --no-install-recommends git unzip tar g++ make python python-dev python-pip curl && \
+    pip install pytest==4.6.4 \
+                 contextlib2==0.5.5 \
+                 lxml==4.3.4 \
+                 pandas==0.24.2 \
+                 scipy==1.2.2 \
+                 Pillow>=1.0 \
+                 Matplotlib>=2.1 \
+                 Cython>=0.28.1
 
 # Install protobuf
 RUN cd /tmp && \
