@@ -237,20 +237,8 @@ class COCOEvalWrapper(cocoeval.COCOeval):
     self.accumulate()
     self.summarize()
 
-    summary_metrics = OrderedDict([
-        ('Precision/mAP', self.stats[0]),
-        ('Precision/mAP@.50IOU', self.stats[1]),
-        ('Precision/mAP@.75IOU', self.stats[2]),
-        ('Precision/mAP (small)', self.stats[3]),
-        ('Precision/mAP (medium)', self.stats[4]),
-        ('Precision/mAP (large)', self.stats[5]),
-        ('Recall/AR@1', self.stats[6]),
-        ('Recall/AR@10', self.stats[7]),
-        ('Recall/AR@100', self.stats[8]),
-        ('Recall/AR@100 (small)', self.stats[9]),
-        ('Recall/AR@100 (medium)', self.stats[10]),
-        ('Recall/AR@100 (large)', self.stats[11])
-    ])
+    metrics = [(k, self.stats[i]) for i, k in enumerate(self.params.summary_config.keys())]
+    summary_metrics = OrderedDict(metrics)
     if not include_metrics_per_category:
       return summary_metrics, {}
     if not hasattr(self, 'category_stats'):
@@ -290,6 +278,20 @@ class COCOEvalWrapper(cocoeval.COCOeval):
             category)] = self.category_stats[11][category_index]
 
     return summary_metrics, per_category_ap
+
+
+class COCOSlimEvalWrapper(COCOEvalWrapper):
+  def __init__(self, groundtruth=None, detections=None, agnostic_mode=False,
+               iou_type='bbox'):
+    super().__init__(groundtruth=groundtruth, detections=detections, agnostic_mode=agnostic_mode, iou_type=iou_type)
+    self.params.iouThrs = np.array([.5])
+    self.params.recThrs = np.linspace(.0, 1.00, int(np.round((1.00 - .0) / .05)) + 1, endpoint=True)
+    self.params.maxDets = [100]
+    self.params.areaRng = [[0 ** 2, 1e5 ** 2]]
+    self.params.areaRngLbl = ['all']
+    self.params.summary_config = OrderedDict({
+      'Precision/mAP@.50IOU': {"ap": 1, "iouThr": .5}
+    })
 
 
 def _ConvertBoxToCOCOFormat(box):

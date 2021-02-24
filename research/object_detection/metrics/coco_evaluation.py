@@ -28,7 +28,8 @@ class CocoDetectionEvaluator(object_detection_evaluation.DetectionEvaluator):
   def __init__(self,
                categories,
                include_metrics_per_category=False,
-               all_metrics_per_category=False):
+               all_metrics_per_category=False,
+               evaluator=coco_tools.COCOEvalWrapper):
     """Constructor.
 
     Args:
@@ -52,6 +53,7 @@ class CocoDetectionEvaluator(object_detection_evaluation.DetectionEvaluator):
     self._metrics = None
     self._include_metrics_per_category = include_metrics_per_category
     self._all_metrics_per_category = all_metrics_per_category
+    self._evaluator = evaluator
 
   def clear(self):
     """Clears the state to prepare for a fresh evaluation."""
@@ -205,13 +207,13 @@ class CocoDetectionEvaluator(object_detection_evaluation.DetectionEvaluator):
     coco_wrapped_groundtruth = coco_tools.COCOWrapper(groundtruth_dict)
     coco_wrapped_detections = coco_wrapped_groundtruth.LoadAnnotations(
         self._detection_boxes_list)
-    box_evaluator = coco_tools.COCOEvalWrapper(
+    box_evaluator = self._evaluator(
         coco_wrapped_groundtruth, coco_wrapped_detections, agnostic_mode=False)
     box_metrics, box_per_category_ap = box_evaluator.ComputeMetrics(
         include_metrics_per_category=self._include_metrics_per_category,
         all_metrics_per_category=self._all_metrics_per_category)
     box_metrics.update(box_per_category_ap)
-    box_metrics = {'DetectionBoxes_'+ key: value
+    box_metrics = {'DetectionBoxes_' + key: value
                    for key, value in iter(box_metrics.items())}
     return box_metrics
 
@@ -337,18 +339,7 @@ class CocoDetectionEvaluator(object_detection_evaluation.DetectionEvaluator):
                                        detection_classes,
                                        num_det_boxes_per_image,
                                        is_annotated], [])
-    metric_names = ['DetectionBoxes_Precision/mAP',
-                    'DetectionBoxes_Precision/mAP@.50IOU',
-                    'DetectionBoxes_Precision/mAP@.75IOU',
-                    'DetectionBoxes_Precision/mAP (large)',
-                    'DetectionBoxes_Precision/mAP (medium)',
-                    'DetectionBoxes_Precision/mAP (small)',
-                    'DetectionBoxes_Recall/AR@1',
-                    'DetectionBoxes_Recall/AR@10',
-                    'DetectionBoxes_Recall/AR@100',
-                    'DetectionBoxes_Recall/AR@100 (large)',
-                    'DetectionBoxes_Recall/AR@100 (medium)',
-                    'DetectionBoxes_Recall/AR@100 (small)']
+    metric_names = ['DetectionBoxes_' + key for key in self._evaluator().params.summary_config.keys()]
     if self._include_metrics_per_category:
       for category_dict in self._categories:
         metric_names.append('DetectionBoxes_PerformanceByCategory/mAP/' +

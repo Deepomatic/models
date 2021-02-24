@@ -11,7 +11,7 @@ RUN cd /tmp && \
 
 # Install PyCOCO tools
 RUN cd /tmp && \
-    git clone https://github.com/cocodataset/cocoapi.git && \
+    git clone https://github.com/Deepomatic/cocoapi.git && \
     cd cocoapi/PythonAPI && \
     mv ../common ./ && \
     sed "s/\.\.\/common/common/g" setup.py > setup.py.updated && \
@@ -20,9 +20,6 @@ RUN cd /tmp && \
     sed "s/\.\.\/common/common/g" pycocotools/_mask.pyx > _mask.pyx.updated && \
     cp -f _mask.pyx.updated pycocotools/_mask.pyx && \
     rm _mask.pyx.updated && \
-    sed "s/import matplotlib\.pyplot as plt/import matplotlib\nmatplotlib\.use\(\'Agg\'\)\nimport matplotlib\.pyplot as plt/g" pycocotools/coco.py > coco.py.updated && \
-    cp -f coco.py.updated pycocotools/coco.py && \
-    rm coco.py.updated && \
     cd ../.. && \
     rm -rf dist && \
     mkdir -p dist && \
