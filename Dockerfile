@@ -1,6 +1,10 @@
-FROM tensorflow/tensorflow:1.12.0-devel as base
+FROM tensorflow/tensorflow:2.3.2-gpu as base
 
-RUN pip install pytest==4.6.4 contextlib2==0.5.5 lxml==4.3.4
+RUN apt update && \
+    apt install -y --no-install-recommends software-properties-common ca-certificates git wget curl tar locales libgl1-mesa-glx && \
+    pip install pip --upgrade && \
+    pip install pytest==4.6.4 contextlib2==0.5.5 lxml==4.3.4 cython==0.29.22 && \
+    rm -rf /var/lib/apt/lists/* /tmp/*
 
 # Install protobuf
 RUN cd /tmp && \
@@ -38,13 +42,19 @@ RUN protoc object_detection/protos/*.proto --python_out=. && \
     python setup.py sdist && \
     pip install dist/slim-0.1.tar.gz
 
-# Do not use --ignore pytest flag: it will make tests crash. Instead, we remove unwanted files
+ADD ./requirements.txt /tmp/requirements.txt
+RUN pip install -r /tmp/requirements.txt
+RUN pip install --no-deps tf-models-official==2.4.0  # this would install tf 2.4
+
+
+## Do not use --ignore pytest flag: it will make tests crash. Instead, we remove unwanted files
 RUN py.test object_detection/dataset_tools/create_pascal_tf_record_test.py && \
-    rm object_detection/dataset_tools/create_pascal_tf_record_test.py && \
-    rm object_detection/builders/dataset_builder_test.py && \
-    rm object_detection/inference/detection_inference_test.py && \
-    rm object_detection/models/ssd_resnet_v1_fpn_feature_extractor_test.py
+    rm object_detection/dataset_tools/create_pascal_tf_record_test.py
+#    rm object_detection/builders/dataset_builder_test.py && \
+#    rm object_detection/inference/detection_inference_tf1_test.py && \
+#    rm object_detection/models/ssd_resnet_v1_fpn_feature_extractor_tf1_test.py
 
 FROM base
 
-RUN py.test object_detection
+# object_detection/builders/model_builder_test.py : this is a base test file, it should be ignored (it is used in model_builder_tfX_test.py)
+RUN py.test object_detection --ignore=object_detection/builders/model_builder_test.py
