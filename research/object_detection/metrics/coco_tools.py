@@ -237,8 +237,7 @@ class COCOEvalWrapper(cocoeval.COCOeval):
     self.accumulate()
     self.summarize()
 
-    metrics = [(k, self.stats[i]) for i, k in enumerate(self.params.summary_config.keys())]
-    summary_metrics = OrderedDict(metrics)
+    summary_metrics = self.stats
     if not include_metrics_per_category:
       return summary_metrics, {}
     if not hasattr(self, 'category_stats'):
