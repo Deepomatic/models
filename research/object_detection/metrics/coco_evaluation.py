@@ -692,7 +692,7 @@ class CocoMaskEvaluator(object_detection_evaluation.DetectionEvaluator):
         detection_masks, num_det_boxes_per_image
     ], [])
 
-    metric_names = ['DetectionBoxes_' + key for key in self._evaluator().params.summary_config.keys()]
+    metric_names = ['DetectionMasks_' + key for key in self._evaluator().params.summary_config.keys()]
     if self._include_metrics_per_category:
       for category_dict in self._categories:
         metric_names.append('DetectionMasks_PerformanceByCategory/mAP/' +
