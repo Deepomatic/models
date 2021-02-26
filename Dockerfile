@@ -13,6 +13,7 @@ RUN cd /tmp && \
 RUN cd /tmp && \
     git clone https://github.com/Deepomatic/cocoapi.git && \
     cd cocoapi/PythonAPI && \
+    git checkout c03543f50d75a4a33b05e364c3e6c392e9d08f88 && \
     mv ../common ./ && \
     sed "s/\.\.\/common/common/g" setup.py > setup.py.updated && \
     cp -f setup.py.updated setup.py && \
