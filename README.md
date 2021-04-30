@@ -6,6 +6,10 @@
 [![tf-models-official PyPI](https://badge.fury.io/py/tf-models-official.svg)](https://badge.fury.io/py/tf-models-official)
 
 
+# Running tests
+
+Run `make` and, once in docker, launch `py.test object_detection`
+
 # Welcome to the Model Garden for TensorFlow
 
 The TensorFlow Model Garden is a repository with a number of different
