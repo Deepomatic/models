@@ -1444,6 +1444,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
         fields.BoxListFields.masks)
     # TODO(rathodv): Remove mask resizing once the legacy pipeline is deleted.
     if groundtruth_masks_list is not None and self._resize_masks:
+      print("RESIZING GT MASKS...")
       resized_masks_list = []
       for mask in groundtruth_masks_list:
 
@@ -1457,8 +1458,9 @@ class FasterRCNNMetaArch(model.DetectionModel):
                                      tf.shape(mask)[2], 1])),
             masks=mask)
         resized_masks_list.append(resized_mask)
-
+        print("resized_masks_list: {}".format(resized_masks_list))
       groundtruth_masks_list = resized_masks_list
+
     if self.groundtruth_has_field(fields.BoxListFields.weights):
       groundtruth_weights_list = self.groundtruth_lists(
           fields.BoxListFields.weights)
