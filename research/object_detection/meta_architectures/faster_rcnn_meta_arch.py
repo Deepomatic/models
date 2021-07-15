@@ -1444,7 +1444,6 @@ class FasterRCNNMetaArch(model.DetectionModel):
         fields.BoxListFields.masks)
     # TODO(rathodv): Remove mask resizing once the legacy pipeline is deleted.
     if groundtruth_masks_list is not None and self._resize_masks:
-      print("RESIZING GT MASKS...")
       resized_masks_list = []
       for mask in groundtruth_masks_list:
 
@@ -1458,7 +1457,6 @@ class FasterRCNNMetaArch(model.DetectionModel):
                                      tf.shape(mask)[2], 1])),
             masks=mask)
         resized_masks_list.append(resized_mask)
-        print("resized_masks_list: {}".format(resized_masks_list))
       groundtruth_masks_list = resized_masks_list
 
     if self.groundtruth_has_field(fields.BoxListFields.weights):
@@ -2024,7 +2022,6 @@ class FasterRCNNMetaArch(model.DetectionModel):
         if groundtruth_masks_list is None:
           raise ValueError('Groundtruth instance masks not provided. '
                            'Please configure input reader.')
-        print("COMPUTING MASK LOSS - predictions: {} AND groundtruths: {}".format(prediction_masks, groundtruth_masks_list))
         if not self._is_training:
           (proposal_boxes, proposal_boxlists, paddings_indicator,
            one_hot_flat_cls_targets_with_background
@@ -2094,14 +2091,10 @@ class FasterRCNNMetaArch(model.DetectionModel):
             batch_cropped_gt_mask,
             weights=tf.expand_dims(mask_losses_weights, axis=-1),
             losses_mask=losses_mask)
-        print("mask_losses = {}".format(mask_losses))
-        # => shape=(1, 64, 1089)
         total_mask_loss = tf.reduce_sum(mask_losses)
-        print("total_mask_loss = {}".format(total_mask_loss))
         normalizer = tf.maximum(
             tf.reduce_sum(mask_losses_weights * mask_height * mask_width), 1.0)
         second_stage_mask_loss = total_mask_loss / normalizer
-        print("second_stage_mask_loss = {}".format(second_stage_mask_loss))
 
       if second_stage_mask_loss is not None:
         mask_loss = tf.multiply(self._second_stage_mask_loss_weight,
