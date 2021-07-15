@@ -1457,8 +1457,8 @@ class FasterRCNNMetaArch(model.DetectionModel):
                                      tf.shape(mask)[2], 1])),
             masks=mask)
         resized_masks_list.append(resized_mask)
-      groundtruth_masks_list = resized_masks_list
 
+      groundtruth_masks_list = resized_masks_list
     if self.groundtruth_has_field(fields.BoxListFields.weights):
       groundtruth_weights_list = self.groundtruth_lists(
           fields.BoxListFields.weights)
@@ -1751,8 +1751,6 @@ class FasterRCNNMetaArch(model.DetectionModel):
           prediction_dict['anchors'], groundtruth_boxlists,
           groundtruth_classes_with_background_list, groundtruth_weights_list)
       if self._number_of_stages > 1:
-        # prediction_dict.get('mask_predictions') shape is shape=(64, 3, 33, 33) ==> why ? batch of 64 ?
-        # groundtruth_masks_list: list of shape=(?, 1365, 1365)
         loss_dict.update(
             self._loss_box_classifier(
                 prediction_dict['refined_box_encodings'],
@@ -2022,6 +2020,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
         if groundtruth_masks_list is None:
           raise ValueError('Groundtruth instance masks not provided. '
                            'Please configure input reader.')
+
         if not self._is_training:
           (proposal_boxes, proposal_boxlists, paddings_indicator,
            one_hot_flat_cls_targets_with_background
@@ -2066,8 +2065,8 @@ class FasterRCNNMetaArch(model.DetectionModel):
 
         # Use normalized proposals to crop mask targets from image masks.
         flat_normalized_proposals = box_list_ops.to_normalized_coordinates(
-            boxlist=box_list.BoxList(tf.reshape(proposal_boxes, [-1, 4])),
-            height=image_shape[1], width=image_shape[2], check_range=False).get()
+            box_list.BoxList(tf.reshape(proposal_boxes, [-1, 4])),
+            image_shape[1], image_shape[2]).get()
 
         flat_cropped_gt_mask = self._crop_and_resize_fn(
             tf.expand_dims(flat_gt_masks, -1),
