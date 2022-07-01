@@ -882,7 +882,7 @@ def to_absolute_coordinates(boxlist,
                             height,
                             width,
                             check_range=True,
-                            maximum_normalized_coordinate=1.1,
+                            maximum_normalized_coordinate=10.0,
                             scope=None):
   """Converts normalized box coordinates to absolute pixel coordinates.
 
@@ -896,7 +896,9 @@ def to_absolute_coordinates(boxlist,
     width: Maximum value for width of absolute box coordinates.
     check_range: If True, checks if the coordinates are normalized or not.
     maximum_normalized_coordinate: Maximum coordinate value to be considered
-      as normalized, default to 1.1.
+      as normalized, default to 10.
+      Note: the original value of 1.1 was too tight and raised an assert for valid normalized boxes
+      with coordinates slightly over 1.1.
     scope: name scope.
 
   Returns:
