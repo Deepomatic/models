@@ -9,6 +9,6 @@ node {
                   extensions: scm.extensions + [[$class: 'SubmoduleOption', recursiveSubmodules: true]],
                   userRemoteConfigs: scm.userRemoteConfigs])
 
-        docker.build 'models:${BUILD_TAG}'
+        docker.build("models:${BUILD_TAG}")
     }
 }

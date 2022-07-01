@@ -1,5 +1,8 @@
 FROM tensorflow/tensorflow:2.3.2-gpu as base
 
+RUN rm /etc/apt/sources.list.d/cuda.list
+RUN rm /etc/apt/sources.list.d/nvidia-ml.list
+
 RUN apt update && \
     apt install -y --no-install-recommends software-properties-common ca-certificates git wget curl tar locales libgl1-mesa-glx && \
     pip install pip --upgrade && \
