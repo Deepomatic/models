@@ -27,11 +27,13 @@ import tensorflow.compat.v1 as tf
 # pylint: disable=g-import-not-at-top
 try:
   from tensorflow.contrib import image as contrib_image
-  from tensorflow.contrib import training as contrib_training
 except ImportError:
-  # TF 2.0 doesn't ship with contrib.
-  pass
+  # TF 2.0 doesn't ship with contrib, fallback with TFA
+  import tensorflow_addons.image as contrib_image
+
 # pylint: enable=g-import-not-at-top
+
+
 
 # This signifies the max integer that the controller RNN could predict for the
 # augmentation scheme.
@@ -1432,9 +1434,9 @@ def _translate_level_to_arg(level, translate_const):
 
 
 def _bbox_cutout_level_to_arg(level, hparams):
-  cutout_pad_fraction = (level/_MAX_LEVEL) * hparams.cutout_max_pad_fraction
+  cutout_pad_fraction = (level/_MAX_LEVEL) * hparams['cutout_max_pad_fraction']
   return (cutout_pad_fraction,
-          hparams.cutout_bbox_replace_with_mean)
+          hparams['cutout_bbox_replace_with_mean'])
 
 
 def level_to_arg(hparams):
@@ -1448,14 +1450,14 @@ def level_to_arg(hparams):
       'Contrast': _enhance_level_to_arg,
       'Brightness': _enhance_level_to_arg,
       'Sharpness': _enhance_level_to_arg,
-      'Cutout': lambda level: (int((level/_MAX_LEVEL) * hparams.cutout_const),),
+      'Cutout': lambda level: (int((level/_MAX_LEVEL) * hparams['cutout_const']),),
       # pylint:disable=g-long-lambda
       'BBox_Cutout': lambda level: _bbox_cutout_level_to_arg(
           level, hparams),
       'TranslateX_BBox': lambda level: _translate_level_to_arg(
-          level, hparams.translate_const),
+          level, hparams['translate_const']),
       'TranslateY_BBox': lambda level: _translate_level_to_arg(
-          level, hparams.translate_const),
+          level, hparams['translate_const']),
       # pylint:enable=g-long-lambda
       'ShearX_BBox': _shear_level_to_arg,
       'ShearY_BBox': _shear_level_to_arg,
@@ -1465,16 +1467,16 @@ def level_to_arg(hparams):
       'ShearY_Only_BBoxes': _shear_level_to_arg,
       # pylint:disable=g-long-lambda
       'TranslateX_Only_BBoxes': lambda level: _translate_level_to_arg(
-          level, hparams.translate_bbox_const),
+          level, hparams['translate_bbox_const']),
       'TranslateY_Only_BBoxes': lambda level: _translate_level_to_arg(
-          level, hparams.translate_bbox_const),
+          level, hparams['translate_bbox_const']),
       # pylint:enable=g-long-lambda
       'Flip_Only_BBoxes': lambda level: (),
       'Solarize_Only_BBoxes': lambda level: (int((level/_MAX_LEVEL) * 256),),
       'Equalize_Only_BBoxes': lambda level: (),
       # pylint:disable=g-long-lambda
       'Cutout_Only_BBoxes': lambda level: (
-          int((level/_MAX_LEVEL) * hparams.cutout_bbox_const),),
+          int((level/_MAX_LEVEL) * hparams['cutout_bbox_const']),),
       # pylint:enable=g-long-lambda
   }
 
@@ -1568,7 +1570,7 @@ def build_and_apply_nas_policy(policies, image, bboxes,
       `func`.
     image: tf.Tensor that the resulting policy will be applied to.
     bboxes:
-    augmentation_hparams: Hparams associated with the NAS learned policy.
+    augmentation_hparams (dict): Hparams associated with the NAS learned policy.
 
   Returns:
     A version of image that now has data augmentation applied to it based on
@@ -1635,14 +1637,15 @@ def distort_image_with_autoaugment(image, bboxes, augmentation_name):
     raise ValueError('Invalid augmentation_name: {}'.format(augmentation_name))
 
   policy = available_policies[augmentation_name]()
-  # Hparams that will be used for AutoAugment.
-  augmentation_hparams = contrib_training.HParams(
-      cutout_max_pad_fraction=0.75,
-      cutout_bbox_replace_with_mean=False,
-      cutout_const=100,
-      translate_const=250,
-      cutout_bbox_const=50,
-      translate_bbox_const=120)
+
+  augmentation_hparams = {
+      'cutout_max_pad_fraction': 0.75,
+      'cutout_bbox_replace_with_mean': False,
+      'cutout_const': 100,
+      'translate_const': 250,
+      'cutout_bbox_const': 50,
+      'translate_bbox_const': 120
+    }
 
   augmented_image, augmented_bbox = (
       build_and_apply_nas_policy(policy, image, bboxes, augmentation_hparams))

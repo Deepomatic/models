@@ -2949,7 +2949,6 @@ class PreprocessorTest(test_case.TestCase, parameterized.TestCase):
     self.assertAllEqual(images_shape, patched_images_shape)
     self.assertAllEqual(images, patched_images)
 
-  @unittest.skipIf(tf_version.is_tf2(), 'Skipping TF1.X only test.')
   def testAutoAugmentImage(self):
     def graph_fn():
       preprocessing_options = []
