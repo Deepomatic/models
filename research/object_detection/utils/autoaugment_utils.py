@@ -30,10 +30,7 @@ try:
 except ImportError:
   # TF 2.0 doesn't ship with contrib, fallback with TFA
   import tensorflow_addons.image as contrib_image
-
 # pylint: enable=g-import-not-at-top
-
-
 
 # This signifies the max integer that the controller RNN could predict for the
 # augmentation scheme.
