@@ -54,9 +54,6 @@ RUN pip install --no-deps tf-models-official==2.4.0  # this would install tf 2.4
 RUN py.test object_detection/dataset_tools/create_pascal_tf_record_test.py && \
     rm object_detection/dataset_tools/create_pascal_tf_record_test.py
 
-# Those tests fail for some unknown reason
-RUN rm object_detection/models/center_net_mobilenet_v2_fpn_feature_extractor_tf2_test.py
-
 FROM base
 
 # object_detection/builders/model_builder_test.py : this is a base test file, it should be ignored (it is used in model_builder_tfX_test.py)
