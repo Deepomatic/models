@@ -37,6 +37,10 @@ RUN cd /tmp && \
     pip install dist/pycocotools-2.0.tar.gz
 
 
+ADD ./requirements.txt /tmp/requirements.txt
+RUN pip install -r /tmp/requirements.txt
+RUN pip install --no-deps tf-models-official==2.4.0  # this would install tf 2.4
+
 ADD research /app
 WORKDIR /app
 
@@ -44,11 +48,6 @@ RUN protoc object_detection/protos/*.proto --python_out=. && \
     cd slim && \
     python setup.py sdist && \
     pip install dist/slim-0.1.tar.gz
-
-ADD ./requirements.txt /tmp/requirements.txt
-RUN pip install -r /tmp/requirements.txt
-RUN pip install --no-deps tf-models-official==2.4.0  # this would install tf 2.4
-
 
 ## Do not use --ignore pytest flag: it will make tests crash. Instead, we remove unwanted files
 RUN py.test object_detection/dataset_tools/create_pascal_tf_record_test.py && \
