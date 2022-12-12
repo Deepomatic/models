@@ -2889,7 +2889,7 @@ class PreprocessorTest(test_case.TestCase, parameterized.TestCase):
     def graph_fn():
       preprocessing_options = []
       preprocessing_options.append((preprocessor.autoaugment_image, {
-          'policy_name': 'v1'
+          'policy_name': 'v1'  # TODO: test v4 here
       }))
       images = self.createTestImages()
       boxes = self.createTestBoxes()

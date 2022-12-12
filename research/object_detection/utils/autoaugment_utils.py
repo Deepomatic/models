@@ -155,6 +155,38 @@ def policy_v3():
   return policy
 
 
+def policy_v4():
+    """"Policy that performs well on classification."""
+    policy = [
+        [('Posterize', 0.4, 8), ('Rotate', 0.6, 9)],
+        [('Solarize', 0.6, 5), ('AutoContrast', 0.6, 5)],
+        [('Equalize', 0.8, 8), ('Equalize', 0.6, 3)],
+        [('Posterize', 0.6, 7), ('Posterize', 0.6, 6)],
+        [('Equalize', 0.4, 7), ('Solarize', 0.2, 4)],
+        [('Equalize', 0.4, 4), ('Rotate', 0.8, 8)],
+        [('Solarize', 0.6, 3), ('Equalize', 0.6, 7)],
+        [('Posterize', 0.8, 5), ('Equalize', 1.0, 2)],
+        [('Rotate', 0.2, 3), ('Solarize', 0.6, 8)],
+        [('Equalize', 0.6, 8), ('Posterize', 0.4, 6)],
+        [('Rotate', 0.8, 8), ('Color', 0.4, 0)],
+        [('Rotate', 0.4, 9), ('Equalize', 0.6, 2)],
+        [('Equalize', 0.0, 7), ('Equalize', 0.8, 8)],
+        [('Invert', 0.6, 4), ('Equalize', 1.0, 8)],
+        [('Color', 0.6, 4), ('Contrast', 1.0, 8)],
+        [('Rotate', 0.8, 8), ('Color', 1.0, 2)],
+        [('Color', 0.8, 8), ('Solarize', 0.8, 7)],
+        [('Sharpness', 0.4, 7), ('Invert', 0.6, 8)],
+        [('ShearX', 0.6, 5), ('Equalize', 1.0, 9)],
+        [('Color', 0.4, 0), ('Equalize', 0.6, 3)],
+        [('Equalize', 0.4, 7), ('Solarize', 0.2, 4)],
+        [('Solarize', 0.6, 5), ('AutoContrast', 0.6, 5)],
+        [('Invert', 0.6, 4), ('Equalize', 1.0, 8)],
+        [('Color', 0.6, 4), ('Contrast', 1.0, 8)],
+        [('Equalize', 0.8, 8), ('Equalize', 0.6, 3)],
+    ]
+    return policy
+
+
 def blend(image1, image2, factor):
   """Blend image1 and image2 using 'factor'.
 
@@ -299,6 +331,16 @@ def posterize(image, bits):
   """Equivalent of PIL Posterize."""
   shift = 8 - bits
   return tf.bitwise.left_shift(tf.bitwise.right_shift(image, shift), shift)
+
+
+def invert(image):
+  """Inverts the image pixels.
+  Args:
+    image: An image Tensor of type uint8.
+  Returns:
+    The inverted version of image."""
+  image = tf.convert_to_tensor(image)
+  return 255 - image
 
 
 def rotate(image, degrees, replace):
@@ -1367,6 +1409,7 @@ NAME_TO_FUNC = {
     'Sharpness': sharpness,
     'Cutout': cutout,
     'BBox_Cutout': bbox_cutout,
+    'Rotate': rotate,
     'Rotate_BBox': rotate_with_bboxes,
     # pylint:disable=g-long-lambda
     'TranslateX_BBox': lambda image, bboxes, pixels, replace: translate_bbox(
@@ -1379,6 +1422,7 @@ NAME_TO_FUNC = {
         image, bboxes, level, replace, shear_horizontal=False),
     # pylint:enable=g-long-lambda
     'Rotate_Only_BBoxes': rotate_only_bboxes,
+    'ShearX': shear_x,
     'ShearX_Only_BBoxes': shear_x_only_bboxes,
     'ShearY_Only_BBoxes': shear_y_only_bboxes,
     'TranslateX_Only_BBoxes': translate_x_only_bboxes,
@@ -1387,6 +1431,7 @@ NAME_TO_FUNC = {
     'Solarize_Only_BBoxes': solarize_only_bboxes,
     'Equalize_Only_BBoxes': equalize_only_bboxes,
     'Cutout_Only_BBoxes': cutout_only_bboxes,
+    'Invert': invert,
 }
 
 
@@ -1456,8 +1501,10 @@ def level_to_arg(hparams):
       'TranslateY_BBox': lambda level: _translate_level_to_arg(
           level, hparams['translate_const']),
       # pylint:enable=g-long-lambda
+      'ShearX': _shear_level_to_arg,
       'ShearX_BBox': _shear_level_to_arg,
       'ShearY_BBox': _shear_level_to_arg,
+      'Rotate': _rotate_level_to_arg,
       'Rotate_BBox': _rotate_level_to_arg,
       'Rotate_Only_BBoxes': _rotate_level_to_arg,
       'ShearX_Only_BBoxes': _shear_level_to_arg,
@@ -1475,6 +1522,7 @@ def level_to_arg(hparams):
       'Cutout_Only_BBoxes': lambda level: (
           int((level/_MAX_LEVEL) * hparams['cutout_bbox_const']),),
       # pylint:enable=g-long-lambda
+      'Invert': lambda level: (),
   }
 
 
@@ -1608,7 +1656,6 @@ def build_and_apply_nas_policy(policies, image, bboxes,
   return (augmented_image, augmented_bbox)
 
 
-# TODO(barretzoph): Add in ArXiv link once paper is out.
 def distort_image_with_autoaugment(image, bboxes, augmentation_name):
   """Applies the AutoAugment policy to `image` and `bboxes`.
 
@@ -1617,19 +1664,24 @@ def distort_image_with_autoaugment(image, bboxes, augmentation_name):
     bboxes: `Tensor` of shape [N, 4] representing ground truth boxes that are
       normalized between [0, 1].
     augmentation_name: The name of the AutoAugment policy to use. The available
-      options are `v0`, `v1`, `v2`, `v3` and `test`. `v0` is the policy used for
-      all of the results in the paper and was found to achieve the best results
+      options are `v0`, `v1`, `v2`, `v3`, `v4` and `test`. `v0` is the policy used for
+      all of the results in the paper [1] and was found to achieve the best results
       on the COCO dataset. `v1`, `v2` and `v3` are additional good policies
       found on the COCO dataset that have slight variation in what operations
       were used during the search procedure along with how many operations are
-      applied in parallel to a single image (2 vs 3).
+      applied in parallel to a single image (2 vs 3). `v4` corresponds to the best policy
+      found in the original paper for classification [2] 'AutoAugment: Learning Augmentation
+      Strategies from Data' on reduced ImageNet dataset (see arxiv link, table 9 in the appendix).
+
+      [1] Object detection: https://arxiv.org/pdf/1906.11172.pdf
+      [2] Classification: https://arxiv.org/pdf/1805.09501.pdf
 
   Returns:
     A tuple containing the augmented versions of `image` and `bboxes`.
   """
   image = tf.cast(image, tf.uint8)
   available_policies = {'v0': policy_v0, 'v1': policy_v1, 'v2': policy_v2,
-                        'v3': policy_v3, 'test': policy_vtest}
+                        'v3': policy_v3, 'v4': policy_v4, 'test': policy_vtest}
   if augmentation_name not in available_policies:
     raise ValueError('Invalid augmentation_name: {}'.format(augmentation_name))
 
