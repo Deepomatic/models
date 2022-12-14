@@ -157,6 +157,9 @@ def policy_v3():
 
 def policy_v4():
     """"Policy that performs well on classification."""
+    # Each tuple is an augmentation operation of the form
+    # (operation, probability, magnitude). Each element in policy is a
+    # sub-policy that will be applied sequentially on the image.
     policy = [
         [('Posterize', 0.4, 8), ('Rotate', 0.6, 9)],
         [('Solarize', 0.6, 5), ('AutoContrast', 0.6, 5)],
