@@ -7,3 +7,4 @@ pytfa==0.9.3
 tensorflow-addons==0.12.1
 gin-config==0.4.0
 apache-beam==2.28.0
+tenacity==8.0.1

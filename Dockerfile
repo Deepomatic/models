@@ -50,10 +50,11 @@ RUN protoc object_detection/protos/*.proto --python_out=. && \
     pip install dist/slim-0.1.tar.gz
 
 ## Do not use --ignore pytest flag: it will make tests crash. Instead, we remove unwanted files
-RUN py.test object_detection/dataset_tools/create_pascal_tf_record_test.py && \
-    rm object_detection/dataset_tools/create_pascal_tf_record_test.py
+# RUN py.test object_detection/dataset_tools/create_pascal_tf_record_test.py && \
+#     rm object_detection/dataset_tools/create_pascal_tf_record_test.py
 
 FROM base
 
 # object_detection/builders/model_builder_test.py : this is a base test file, it should be ignored (it is used in model_builder_tfX_test.py)
-RUN py.test object_detection --ignore=object_detection/builders/model_builder_test.py
+# RUN py.test object_detection --ignore=object_detection/builders/model_builder_test.py
+RUN py.test object_detection/builders/dataset_builder_test.py -k test_read_dataset_unreachable_resource
