@@ -2924,13 +2924,19 @@ def autoaugment_image(image, boxes, policy_name='v0'):
            Boxes are in normalized form meaning their coordinates vary
            between [0, 1].
            Each row is in the form of [ymin, xmin, ymax, xmax].
+
     policy_name: The name of the AutoAugment policy to use. The available
-      options are `v0`, `v1`, `v2`, `v3` and `test`. `v0` is the policy used for
-      all of the results in the paper and was found to achieve the best results
+      options are `v0`, `v1`, `v2`, `v3`, `v4` and `test`. `v0` is the policy used for
+      all of the results in the paper [1] and was found to achieve the best results
       on the COCO dataset. `v1`, `v2` and `v3` are additional good policies
       found on the COCO dataset that have slight variation in what operations
       were used during the search procedure along with how many operations are
-      applied in parallel to a single image (2 vs 3).
+      applied in parallel to a single image (2 vs 3). `v4` corresponds to the best policy
+      found in the original paper for classification [2] 'AutoAugment: Learning Augmentation
+      Strategies from Data' on reduced ImageNet dataset (see arxiv link, table 9 in the appendix).
+
+      [1] Object detection: https://arxiv.org/pdf/1906.11172.pdf
+      [2] Classification: https://arxiv.org/pdf/1805.09501.pdf
 
 
   Returns:
