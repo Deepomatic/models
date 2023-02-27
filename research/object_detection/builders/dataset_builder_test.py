@@ -48,6 +48,16 @@ def get_iterator_next_for_testing(dataset, is_tf2):
     tf.add_to_collection(tf.GraphKeys.TABLE_INITIALIZERS, iterator.initializer)
   return iterator.get_next()
 
+def get_iterator_next_for_testing_patched(dataset, is_tf2, filepath):
+  iterator = dataset.make_initializable_iterator()
+  if not is_tf2:
+    tf.add_to_collection(tf.GraphKeys.TABLE_INITIALIZERS, iterator.initializer)
+  print(f"dataset: {dataset.__dict__}")
+  print(f"dataset is here: {filepath % '0'}")
+  os.rename(filepath % '0', filepath % 'ayooo')
+  elt = iterator.get_next()
+  print(f"elt: {elt}")
+  return elt
 
 def _get_labelmap_path():
   """Returns an absolute path to label map file."""
@@ -647,6 +657,59 @@ class ReadDatasetTest(test_case.TestCase):
 
     self.assertRaises(tf.errors.OutOfRangeError, self.execute,
                       compute_fn=graph_fn_second_batch, inputs=[])
+
+###################
+
+  def _get_simple_dataset(self, tf_record_path):
+    input_reader_text_proto = """
+      shuffle: false
+      num_readers: 1
+      num_prefetch_batches: 1
+      prefetch_size: 1
+      tf_record_input_reader {{
+        input_path: '{0}'
+      }}
+    """.format(tf_record_path)
+    input_reader_proto = input_reader_pb2.InputReader()
+    text_format.Merge(input_reader_text_proto, input_reader_proto)
+    dataset = dataset_builder.build(input_reader_proto, batch_size=1)
+    return dataset
+
+  def test_read_dataset_unreachable_resource(self):
+    from unittest.mock import patch
+    import os
+
+    def graph_fn():
+      dataset = self._get_simple_dataset(self._path_template % '0')
+
+      # rename - does not prevent to reading of the file, no retry
+      for i in range(5):
+        path = self._path_template % i
+        os.rename(path, self._path_template % str(999-i))
+      print(f"files renamed: {os.listdir(self.get_temp_dir())}")
+
+      print("using an explicit iterator")
+      # Pbm: tf.estimator.TrainSpec reads the input by creating a different
+      # iterator with tf.compat.v1.data.make_initializable_iterator(result)
+      # cf: https://github.com/tensorflow/estimator/blob/8f4e954bd562514dea702894f706515ec2d721c8/tensorflow_estimator/python/estimator/util.py#L57
+      iterator = iter(dataset)
+      print(f"iterator: {iterator}")
+      elt = iterator.get_next()
+      print(f"elt: {elt}")
+
+      # using an implicit iterator in a loop
+      for x in dataset:
+        print(f"x: {x}")  # works, but it's not using the overriden __iter__ method used
+
+    with patch('tenacity.after_log') as after_log_mock:
+      # with self.assertRaises(tensorflow.python.framework.errors_impl.FailedPreconditionError,
+      self.assertRaises(Exception,
+                         self.execute,
+                         compute_fn=graph_fn,
+                         inputs=[])
+
+    self.assertTrue(after_log_mock.call_count == 5)
+
 
 
 if __name__ == '__main__':

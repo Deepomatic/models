@@ -27,10 +27,78 @@ from __future__ import division
 from __future__ import print_function
 
 import functools
+import logging
+from tenacity import (retry, stop_after_attempt, wait_exponential, wait_random,
+    after_log, retry_if_exception)
 import tensorflow.compat.v1 as tf
+import tensorflow as tf2
 
 from object_detection.builders import decoder_builder
 from object_detection.protos import input_reader_pb2
+
+
+default_retry_parameters = {
+    'reraise': True,
+    'stop': stop_after_attempt(5),
+    'wait': wait_exponential(min=3, multiplier=3) + wait_random(0, 10),
+    'after': after_log(logging.getLogger(__name__), logging.INFO)
+}
+
+
+class IteratorWithRetry:
+    def __init__(self, iterator):
+        print("IteratorWithRetry.__init__")
+        self._iterator = iterator
+
+    @retry(**default_retry_parameters)
+    def __next__(self):
+        print("IteratorWithRetry.__next__")
+        return next(self._iterator)
+
+    def get_next(self):
+        print("IteratorWithRetry.get_next")
+        return self.__next__()
+
+
+class TFRecordDatasetWithRetry(tf.data.TFRecordDataset):
+    def __init__(self, *args, **kwargs):
+        print("TFRecordDatasetWithRetry.__init__")
+        super().__init__(*args, **kwargs)
+
+    def __iter__(self, *args, **kwargs):
+        print("TFRecordDatasetWithRetry.__iter__")
+        return IteratorWithRetry(super().__iter__(*args, **kwargs))
+
+    def __next__(self):
+        print("TFRecordDatasetWithRetry.__next__")
+        return super().__next__()
+
+
+class MyOwnDataset(tf2.data.Dataset):
+  """A `Dataset` that zips its inputs together."""
+
+  def __init__(self, dataset):
+    self._dataset = dataset.filter(lambda x: True)
+    self._structure = dataset.element_spec
+    variant_tensor = dataset._variant_tensor
+    variant = tf.data.experimental.to_variant(dataset)
+    super(MyOwnDataset, self).__init__(variant)
+
+  @retry(**default_retry_parameters)
+  def __iter__(self, *args, **kwargs):
+    print("overriden __iter__")
+    return IteratorWithRetry(super().__iter__(*args, **kwargs))
+
+  def _as_variant_tensor(self):
+    return self._dataset._variant_tensor
+
+  def _inputs(self):
+    return self._dataset._inputs()
+
+  @property
+  def element_spec(self):
+    return self._structure
+
 
 
 def make_initializable_iterator(dataset):
@@ -180,7 +248,7 @@ def build(input_reader_config, batch_size=None, transform_input_data_fn=None,
     if input_context is not None:
       batch_size = input_context.get_per_replica_batch_size(batch_size)
     dataset = read_dataset(
-        functools.partial(tf.data.TFRecordDataset, buffer_size=8 * 1000 * 1000),
+        functools.partial(TFRecordDatasetWithRetry, buffer_size=8 * 1000 * 1000),
         config.input_path[:], input_reader_config, filename_shard_fn=shard_fn)
     if input_reader_config.sample_1_of_n_examples > 1:
       dataset = dataset.shard(input_reader_config.sample_1_of_n_examples, 0)
@@ -197,6 +265,10 @@ def build(input_reader_config, batch_size=None, transform_input_data_fn=None,
     if batch_size:
       dataset = dataset.batch(batch_size, drop_remainder=True)
     dataset = dataset.prefetch(input_reader_config.num_prefetch_batches)
-    return dataset
+    # Override __iter__
+    # Note: any transformation on my_dataset (.range(), .apply(), ...) will
+    # override back __iter__
+    my_dataset = MyOwnDataset(dataset)
+    return my_dataset
 
   raise ValueError('Unsupported input_reader_config.')
