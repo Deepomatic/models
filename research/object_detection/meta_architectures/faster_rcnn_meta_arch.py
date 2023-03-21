@@ -891,7 +891,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
     else:
       anchors_boxlist = box_list_ops.clip_to_window(
           anchors_boxlist, clip_window,
-          filter_nonoverlapping=not self._use_static_shapes)
+          filter_nonoverlapping=False)
 
     self._anchors = anchors_boxlist
     prediction_dict = {

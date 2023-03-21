@@ -692,10 +692,7 @@ def sort_by_field(boxlist, field, order=SortOrder.descend, scope=None):
         ['Incorrect field size: actual vs expected.', num_entries, num_boxes])
 
     with tf.control_dependencies([length_assert]):
-      _, sorted_indices = tf.nn.top_k(field_to_sort, num_boxes, sorted=True)
-
-    if order == SortOrder.ascend:
-      sorted_indices = tf.reverse_v2(sorted_indices, [0])
+      sorted_indices = tf.argsort(field_to_sort, direction='ASCENDING' if SortOrder.ascend else 'DESCENDING')
 
     return gather(boxlist, sorted_indices)
 

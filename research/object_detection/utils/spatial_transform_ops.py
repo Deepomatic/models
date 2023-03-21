@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import print_function
 
 import tensorflow.compat.v1 as tf
+import tensorflow as tf2
 from object_detection.utils import shape_utils
 
 
@@ -474,11 +475,10 @@ def native_crop_and_resize(image, boxes, crop_size, scope=None):
     return tf.reshape(ones_mat * multiplier, [-1])
 
   with tf.name_scope(scope, 'CropAndResize'):
-    cropped_regions = tf.image.crop_and_resize(
+    cropped_regions = tf2.image.crop_and_resize(
         image, tf.reshape(boxes, [-1] + boxes.shape.as_list()[2:]),
         get_box_inds(boxes), crop_size)
-    final_shape = tf.concat([tf.shape(boxes)[:2],
-                             tf.shape(cropped_regions)[1:]], axis=0)
+    final_shape = boxes.shape.as_list()[:2] + cropped_regions.shape.as_list()[1:]
     return tf.reshape(cropped_regions, final_shape)
 
 
