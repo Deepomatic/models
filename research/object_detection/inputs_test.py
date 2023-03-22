@@ -40,8 +40,6 @@ if six.PY2:
 else:
   from unittest import mock  # pylint: disable=g-import-not-at-top, g-importing-member
 
-FLAGS = tf.flags.FLAGS
-
 
 def _get_configs_for_model(model_name):
   """Returns configurations for model."""
