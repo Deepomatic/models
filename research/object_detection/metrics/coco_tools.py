@@ -55,7 +55,7 @@ from pycocotools import mask
 import six
 from six.moves import range
 from six.moves import zip
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.utils import json_utils
 

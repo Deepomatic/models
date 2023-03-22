@@ -20,7 +20,7 @@ from __future__ import print_function
 
 import os
 import numpy as np
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.core import standard_fields as fields
 from object_detection.data_decoders import tf_sequence_example_decoder

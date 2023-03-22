@@ -20,7 +20,7 @@ where the last dimension holds rank 2 tensors of the form [y, x] representing
 the coordinates of the keypoint.
 """
 import numpy as np
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.utils import shape_utils
 

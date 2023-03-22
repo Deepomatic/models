@@ -20,7 +20,7 @@ import numpy as np
 
 from pycocotools import mask
 
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.metrics import coco_tools
 

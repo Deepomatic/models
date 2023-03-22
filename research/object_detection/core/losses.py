@@ -33,7 +33,7 @@ from __future__ import print_function
 
 import abc
 import six
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 from object_detection.core import box_list
 from object_detection.core import box_list_ops
 from object_detection.utils import ops

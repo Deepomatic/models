@@ -20,7 +20,7 @@ import os
 import unittest
 import numpy as np
 import six
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 import tf_slim as slim
 
 from tensorflow.core.framework import types_pb2

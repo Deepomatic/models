@@ -15,7 +15,7 @@
 """Helper functions for SSD models meta architecture tests."""
 
 import functools
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 from google.protobuf import text_format
 
 from object_detection.builders import post_processing_builder

@@ -18,7 +18,7 @@ from __future__ import division
 from __future__ import print_function
 
 # pylint: disable=protected-access
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 # pylint: disable=g-import-not-at-top
 # Checking TF version, because this module relies on TPUPartitionedCall

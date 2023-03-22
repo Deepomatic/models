@@ -75,7 +75,7 @@ import sys
 import six
 from six.moves import range
 from six.moves import zip
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from tensorflow.python.ops import control_flow_ops
 from object_detection.core import box_list

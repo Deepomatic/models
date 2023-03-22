@@ -15,7 +15,7 @@
 """Tests for graph_rewriter_builder."""
 import unittest
 from unittest import mock  # pylint: disable=g-importing-member
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 import tf_slim as slim
 
 from object_detection.builders import graph_rewriter_builder

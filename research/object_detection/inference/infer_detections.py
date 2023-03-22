@@ -35,7 +35,7 @@ metrics).
 """
 
 import itertools
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 from object_detection.inference import detection_inference
 
 tf.flags.DEFINE_string('input_tfrecord_paths', None,

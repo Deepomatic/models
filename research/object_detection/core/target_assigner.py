@@ -37,7 +37,7 @@ from __future__ import print_function
 
 from six.moves import range
 from six.moves import zip
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 import tensorflow.compat.v2 as tf2
 
 from object_detection.box_coders import faster_rcnn_box_coder

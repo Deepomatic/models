@@ -15,7 +15,7 @@
 """Tests for google3.image.understanding.object_detection.utils.json_utils."""
 import os
 
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.utils import json_utils
 

@@ -23,7 +23,7 @@ import math
 
 from six.moves import range
 from six.moves import zip
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from google.protobuf import text_format
 from object_detection.anchor_generators import flexible_grid_anchor_generator

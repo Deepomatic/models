@@ -15,7 +15,7 @@
 """Testing mobilenet_v2 feature extractor for CenterNet."""
 import unittest
 import numpy as np
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.models import center_net_mobilenet_v2_feature_extractor
 from object_detection.models.keras_models import mobilenet_v2

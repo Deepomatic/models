@@ -25,7 +25,7 @@ import numpy as np
 import six
 from six.moves import range
 from six.moves import zip
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.core import preprocessor
 from object_detection.core import preprocessor_cache

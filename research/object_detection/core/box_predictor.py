@@ -27,7 +27,7 @@ These modules are separated from the main model since the same
 few box predictor architectures are shared across many models.
 """
 from abc import abstractmethod
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 BOX_ENCODINGS = 'box_encodings'
 CLASS_PREDICTIONS_WITH_BACKGROUND = 'class_predictions_with_background'

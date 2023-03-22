@@ -19,7 +19,7 @@ from __future__ import print_function
 
 import unittest
 from absl.testing import parameterized
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.meta_architectures import context_rcnn_lib
 from object_detection.utils import test_case

@@ -20,7 +20,7 @@ from __future__ import print_function
 
 import unittest
 import numpy as np
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 from object_detection.metrics import calibration_metrics
 from object_detection.utils import tf_version
 

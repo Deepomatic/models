@@ -25,7 +25,7 @@ from absl import logging
 from absl.testing import parameterized
 import numpy as np
 import six
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection import inputs
 from object_detection.core import preprocessor

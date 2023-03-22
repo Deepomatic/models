@@ -15,7 +15,7 @@
 """Library to export TFLite-compatible SavedModel from TF2 detection models."""
 import os
 import numpy as np
-import tensorflow.compat.v1 as tf1
+import tensorflow as tf1
 import tensorflow.compat.v2 as tf
 
 from object_detection.builders import model_builder

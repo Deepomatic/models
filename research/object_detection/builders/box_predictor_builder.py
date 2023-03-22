@@ -16,7 +16,7 @@
 """Function to build box predictor from configuration."""
 
 import collections
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 from object_detection.predictors import convolutional_box_predictor
 from object_detection.predictors import convolutional_keras_box_predictor
 from object_detection.predictors import mask_rcnn_box_predictor

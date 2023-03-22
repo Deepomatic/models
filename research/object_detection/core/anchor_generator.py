@@ -37,7 +37,7 @@ from abc import ABCMeta
 from abc import abstractmethod
 
 import six
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 
 class AnchorGenerator(six.with_metaclass(ABCMeta, object)):

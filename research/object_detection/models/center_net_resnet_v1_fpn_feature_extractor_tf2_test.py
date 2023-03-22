@@ -17,7 +17,7 @@ import unittest
 from absl.testing import parameterized
 
 import numpy as np
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.models import center_net_resnet_v1_fpn_feature_extractor
 from object_detection.utils import test_case

@@ -43,7 +43,7 @@ import numpy as np
 import PIL.Image
 
 from pycocotools import mask
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.dataset_tools import tf_record_creation_util
 from object_detection.utils import dataset_util

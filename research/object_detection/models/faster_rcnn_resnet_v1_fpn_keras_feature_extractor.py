@@ -15,7 +15,7 @@
 
 """Faster RCNN Keras-based Resnet V1 FPN Feature Extractor."""
 
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.meta_architectures import faster_rcnn_meta_arch
 from object_detection.models import feature_map_generators

@@ -22,7 +22,7 @@ import collections
 import numpy as np
 from six.moves import range
 from six.moves import zip
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.core import box_list
 from object_detection.core import box_list_ops

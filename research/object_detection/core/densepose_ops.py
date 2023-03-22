@@ -28,7 +28,7 @@ import os
 
 import numpy as np
 import scipy.io
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.utils import shape_utils
 

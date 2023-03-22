@@ -24,7 +24,7 @@ import pprint
 import time
 
 import numpy as np
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection import eval_util
 from object_detection import inputs

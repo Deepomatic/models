@@ -22,7 +22,7 @@ import functools
 import os
 import unittest
 import numpy as np
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 from tensorflow.compat.v1 import estimator as tf_estimator
 
 from object_detection import inputs

@@ -20,7 +20,7 @@ from __future__ import print_function
 
 import os
 import numpy as np
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from google.protobuf import text_format
 from object_detection.builders import decoder_builder

@@ -16,7 +16,7 @@
 """Tests for object_detection.core.bipartite_matcher."""
 import unittest
 import numpy as np
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.utils import test_case
 from object_detection.utils import tf_version

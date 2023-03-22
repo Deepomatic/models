@@ -23,7 +23,7 @@ import unittest
 
 from absl.testing import parameterized
 import numpy as np
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.tpu_exporters import export_saved_model_tpu_lib
 from object_detection.utils import tf_version

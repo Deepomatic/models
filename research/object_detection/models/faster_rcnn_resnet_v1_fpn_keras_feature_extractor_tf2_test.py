@@ -15,7 +15,7 @@
 
 """Tests for models.faster_rcnn_resnet_v1_fpn_keras_feature_extractor."""
 import unittest
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from google.protobuf import text_format
 

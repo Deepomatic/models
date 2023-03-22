@@ -19,7 +19,7 @@ See Deep Residual Learning for Image Recognition by He et al.
 https://arxiv.org/abs/1512.03385
 """
 
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.meta_architectures import faster_rcnn_meta_arch
 from object_detection.models.keras_models import resnet_v1

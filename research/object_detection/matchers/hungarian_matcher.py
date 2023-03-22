@@ -18,7 +18,7 @@
 import numpy as np
 from scipy.optimize import linear_sum_assignment
 
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 from object_detection.core import matcher
 
 

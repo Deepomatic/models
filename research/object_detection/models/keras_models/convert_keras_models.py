@@ -25,7 +25,7 @@ import os
 
 from absl import app
 import numpy as np
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 FLAGS = tf.flags.FLAGS
 

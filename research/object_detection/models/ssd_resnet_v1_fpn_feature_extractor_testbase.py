@@ -20,7 +20,7 @@ from __future__ import print_function
 import abc
 import numpy as np
 from six.moves import zip
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.models import ssd_feature_extractor_test
 from object_detection.utils import test_utils

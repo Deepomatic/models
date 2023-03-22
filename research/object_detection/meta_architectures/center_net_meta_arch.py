@@ -21,7 +21,7 @@
 import abc
 import collections
 import functools
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 import tensorflow.compat.v2 as tf2
 
 from object_detection.core import box_list

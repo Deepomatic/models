@@ -16,7 +16,7 @@
 """Functions to export object detection inference graph."""
 import os
 import tempfile
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 import tf_slim as slim
 from tensorflow.core.protobuf import saver_pb2
 from tensorflow.python.tools import freeze_graph  # pylint: disable=g-direct-tensorflow-import

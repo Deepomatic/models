@@ -24,7 +24,7 @@ import tempfile
 import unittest
 import numpy as np
 import six
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 import tensorflow.compat.v2 as tf2
 
 from object_detection import exporter_lib_v2

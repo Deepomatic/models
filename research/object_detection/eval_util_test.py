@@ -24,7 +24,7 @@ from absl.testing import parameterized
 import numpy as np
 import six
 from six.moves import range
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 from google.protobuf import text_format
 
 from object_detection import eval_util

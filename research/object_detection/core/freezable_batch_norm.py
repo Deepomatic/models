@@ -14,7 +14,7 @@
 # ==============================================================================
 
 """A freezable batch norm layer that uses Keras batch normalization."""
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 
 class FreezableBatchNorm(tf.keras.layers.BatchNormalization):

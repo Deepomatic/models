@@ -19,7 +19,7 @@ import unittest
 import numpy as np
 from PIL import Image
 import six
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 from google.protobuf import text_format
 
 from object_detection.core import standard_fields

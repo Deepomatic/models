@@ -22,7 +22,7 @@ import functools
 import unittest
 from unittest import mock  # pylint: disable=g-importing-member
 from absl.testing import parameterized
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 import tf_slim as slim
 
 from google.protobuf import text_format

@@ -34,7 +34,7 @@ Some other notes:
   * Tensors are always provided as (flat) [N, 4] tensors.
 """
 
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.utils import shape_utils
 

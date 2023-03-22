@@ -15,7 +15,7 @@
 """Testing hourglass feature extractor for CenterNet."""
 import unittest
 import numpy as np
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.models import center_net_hourglass_feature_extractor as hourglass
 from object_detection.models.keras_models import hourglass_network

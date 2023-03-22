@@ -16,7 +16,7 @@
 """Tests for object_detection.core.target_assigner."""
 from absl.testing import parameterized
 import numpy as np
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.box_coders import keypoint_box_coder
 from object_detection.box_coders import mean_stddev_box_coder

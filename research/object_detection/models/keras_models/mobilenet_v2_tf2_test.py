@@ -20,7 +20,7 @@ from __future__ import print_function
 import unittest
 import numpy as np
 from six.moves import zip
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from google.protobuf import text_format
 

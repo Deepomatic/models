@@ -27,7 +27,7 @@ from __future__ import print_function
 
 import functools
 import math
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.builders import decoder_builder
 from object_detection.protos import input_reader_pb2

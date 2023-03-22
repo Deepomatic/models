@@ -25,7 +25,7 @@ from __future__ import print_function
 
 import math
 from six.moves import range
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.predictors.heads import head
 from object_detection.utils import ops
