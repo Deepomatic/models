@@ -35,6 +35,7 @@ import csv
 import os
 import re
 import tensorflow as tf
+from tensorflow.compat.v1.app import flags
 
 from object_detection import eval_util
 from object_detection.core import standard_fields
@@ -42,7 +43,6 @@ from object_detection.metrics import tf_example_parser
 from object_detection.utils import config_util
 from object_detection.utils import label_map_util
 
-flags = tf.app.flags
 tf.logging.set_verbosity(tf.logging.INFO)
 
 flags.DEFINE_string('eval_dir', None, 'Directory to write eval summaries to.')
@@ -168,4 +168,5 @@ def main(argv):
 
 
 if __name__ == '__main__':
-  tf.app.run(main)
+  from tensorflow.compat.v1.app import run
+  run(main)

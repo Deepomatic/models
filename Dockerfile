@@ -59,6 +59,8 @@ FROM base
 # Remove helper scripts
 RUN rm object_detection/dataset_tools/create_*.py && \
     rm -r object_detection/legacy && \
+    rm -r object_detection/inference && \
+    rm -r object_detection/tpu_exporters && \
     rm object_detection/export_*.py
 
 # object_detection/builders/model_builder_test.py : this is a base test file, it should be ignored (it is used in model_builder_tfX_test.py)
