@@ -55,6 +55,7 @@ from object_detection.matchers import hungarian_matcher
 from object_detection.utils import shape_utils
 from object_detection.utils import target_assigner_utils as ta_utils
 from object_detection.utils import tf_version
+from object_detection.utils.control_dependencies import assert_control_dependencies
 
 if tf_version.is_tf1():
   from object_detection.matchers import bipartite_matcher  # pylint: disable=g-import-not-at-top
@@ -193,7 +194,7 @@ class TargetAssigner(object):
     scores = 1 - groundtruth_labels[:, 0]
     groundtruth_boxes.add_field(fields.BoxListFields.scores, scores)
 
-    with tf.control_dependencies(
+    with assert_control_dependencies(
         [unmatched_shape_assert, labels_and_box_shapes_assert]):
       match_quality_matrix = self._similarity_calc.compare(groundtruth_boxes,
                                                            anchors)

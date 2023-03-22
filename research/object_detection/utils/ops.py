@@ -30,6 +30,7 @@ from object_detection.core import standard_fields as fields
 from object_detection.utils import shape_utils
 from object_detection.utils import spatial_transform_ops as spatial_ops
 from object_detection.utils import static_shape
+from object_detection.utils.control_dependencies import assert_control_dependencies
 
 
 matmul_crop_and_resize = spatial_ops.matmul_crop_and_resize
@@ -911,7 +912,7 @@ def merge_boxes_with_multiple_labels(boxes,
   box_dimension_assert = tf.assert_equal(boxes_shape[1], 4)
   box_normalized_assert = shape_utils.assert_box_normalized(boxes)
 
-  with tf.control_dependencies(
+  with assert_control_dependencies(
       [box_class_shape_assert, box_confidence_shape_assert,
        box_dimension_assert, box_normalized_assert]):
     quantized_boxes = tf.to_int64(boxes * (quantization_bins - 1))

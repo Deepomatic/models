@@ -23,6 +23,7 @@ from six.moves import zip
 import tensorflow.compat.v1 as tf
 
 from object_detection.utils import static_shape
+from object_detection.utils.control_dependencies import assert_control_dependencies
 
 
 get_dim_as_int = static_shape.get_dim_as_int
@@ -284,7 +285,7 @@ def check_min_image_dim(min_dim, image_tensor):
         tf.logical_and(tf.greater_equal(tf.shape(image_tensor)[1], min_dim),
                        tf.greater_equal(tf.shape(image_tensor)[2], min_dim)),
         ['image size must be >= {} in both height and width.'.format(min_dim)])
-    with tf.control_dependencies([shape_assert]):
+    with assert_control_dependencies([shape_assert]):
       return tf.identity(image_tensor)
 
   if image_height < min_dim or image_width < min_dim:
@@ -462,7 +463,7 @@ def expand_first_dimension(inputs, dims):
       message=('First dimension of `inputs` cannot be expanded into provided '
                '`dims`'))
 
-  with tf.control_dependencies([assert_op]):
+  with assert_control_dependencies([assert_op]):
     inputs_reshaped = tf.reshape(inputs, expanded_shape)
 
   return inputs_reshaped
