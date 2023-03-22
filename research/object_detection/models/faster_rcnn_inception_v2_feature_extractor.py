@@ -22,6 +22,7 @@ import tensorflow.compat.v1 as tf
 import tf_slim as slim
 
 from object_detection.meta_architectures import faster_rcnn_meta_arch
+from object_detection.utils.control_dependencies import assert_control_dependencies
 from nets import inception_v2
 
 
@@ -123,7 +124,7 @@ class FasterRCNNInceptionV2FeatureExtractor(
                        tf.greater_equal(tf.shape(preprocessed_inputs)[2], 33)),
         ['image size must at least be 33 in both height and width.'])
 
-    with tf.control_dependencies([shape_assert]):
+    with assert_control_dependencies([shape_assert]):
       with tf.variable_scope('InceptionV2',
                              reuse=self._reuse_weights) as scope:
         with _batch_norm_arg_scope([slim.conv2d, slim.separable_conv2d],

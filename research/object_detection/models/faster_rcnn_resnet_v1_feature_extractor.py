@@ -28,6 +28,7 @@ import tensorflow.compat.v1 as tf
 import tf_slim as slim
 
 from object_detection.meta_architectures import faster_rcnn_meta_arch
+from object_detection.utils.control_dependencies import assert_control_dependencies
 from nets import resnet_utils
 from nets import resnet_v1
 
@@ -119,7 +120,7 @@ class FasterRCNNResnetV1FeatureExtractor(
             tf.greater_equal(tf.shape(preprocessed_inputs)[2], 33)),
         ['image size must at least be 33 in both height and width.'])
 
-    with tf.control_dependencies([shape_assert]):
+    with assert_control_dependencies([shape_assert]):
       # Disables batchnorm for fine-tuning with smaller batch sizes.
       # TODO(chensun): Figure out if it is needed when image
       # batch size is bigger.

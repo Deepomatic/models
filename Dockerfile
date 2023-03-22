@@ -56,6 +56,8 @@ RUN protoc object_detection/protos/*.proto --python_out=. && \
 
 FROM base
 
+ENV ASSERT_ACTIVE 1
+
 # This test fails if included in the rest of the test: not sure why.
 # Running it separately still works
 RUN py.test object_detection/dataset_tools/create_pascal_tf_record_test.py && \

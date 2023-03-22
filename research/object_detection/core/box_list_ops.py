@@ -33,6 +33,7 @@ import tensorflow.compat.v1 as tf
 from object_detection.core import box_list
 from object_detection.utils import ops
 from object_detection.utils import shape_utils
+from object_detection.utils.control_dependencies import assert_control_dependencies
 
 
 class SortOrder(object):
@@ -691,7 +692,7 @@ def sort_by_field(boxlist, field, order=SortOrder.descend, scope=None):
         tf.equal(num_boxes, num_entries),
         ['Incorrect field size: actual vs expected.', num_entries, num_boxes])
 
-    with tf.control_dependencies([length_assert]):
+    with assert_control_dependencies([length_assert]):
       sorted_indices = tf.argsort(field_to_sort, direction='ASCENDING' if SortOrder.ascend else 'DESCENDING')
 
     return gather(boxlist, sorted_indices)
@@ -869,7 +870,7 @@ def to_normalized_coordinates(boxlist, height, width,
       max_val = tf.reduce_max(boxlist.get())
       max_assert = tf.Assert(tf.greater(max_val, 1.01),
                              ['max value is lower than 1.01: ', max_val])
-      with tf.control_dependencies([max_assert]):
+      with assert_control_dependencies([max_assert]):
         width = tf.identity(width)
 
     return scale(boxlist, 1 / height, 1 / width)
@@ -913,7 +914,7 @@ def to_absolute_coordinates(boxlist,
           tf.greater_equal(maximum_normalized_coordinate, box_maximum),
           ['maximum box coordinate value is larger '
            'than %f: ' % maximum_normalized_coordinate, box_maximum])
-      with tf.control_dependencies([max_assert]):
+      with assert_control_dependencies([max_assert]):
         width = tf.identity(width)
 
     return scale(boxlist, height, width)
@@ -1053,7 +1054,7 @@ def box_voting(selected_boxes, pool_boxes, iou_thresh=0.5):
       tf.reduce_all(tf.greater_equal(scores, 0)),
       ['Scores must be non negative.'])
 
-  with tf.control_dependencies([scores_assert, match_assert]):
+  with assert_control_dependencies([scores_assert, match_assert]):
     sum_scores = tf.matmul(match_indicator, scores)
   averaged_scores = tf.reshape(sum_scores, [-1]) / num_matches
 

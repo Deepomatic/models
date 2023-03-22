@@ -23,6 +23,7 @@ import numpy as np
 import tensorflow.compat.v1 as tf
 
 from object_detection.utils import shape_utils
+from object_detection.utils.control_dependencies import assert_control_dependencies
 
 
 def scale(keypoints, y_scale, x_scale, scope=None):
@@ -181,7 +182,7 @@ def to_normalized_coordinates(keypoints, height, width,
       max_val = tf.reduce_max(keypoints)
       max_assert = tf.Assert(tf.greater(max_val, 1.01),
                              ['max value is lower than 1.01: ', max_val])
-      with tf.control_dependencies([max_assert]):
+      with assert_control_dependencies([max_assert]):
         width = tf.identity(width)
 
     return scale(keypoints, 1.0 / height, 1.0 / width)
@@ -217,7 +218,7 @@ def to_absolute_coordinates(keypoints, height, width,
       max_assert = tf.Assert(tf.greater_equal(1.01, max_val),
                              ['maximum keypoint coordinate value is larger '
                               'than 1.01: ', max_val])
-      with tf.control_dependencies([max_assert]):
+      with assert_control_dependencies([max_assert]):
         width = tf.identity(width)
 
     return scale(keypoints, height, width)

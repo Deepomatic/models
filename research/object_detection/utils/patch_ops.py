@@ -20,6 +20,7 @@ from __future__ import division
 from __future__ import print_function
 
 import tensorflow.compat.v1 as tf
+from object_detection.utils.control_dependencies import assert_control_dependencies
 
 
 def get_patch_mask(y, x, patch_size, image_shape):
@@ -52,7 +53,7 @@ def get_patch_mask(y, x, patch_size, image_shape):
   """
   image_hw = image_shape[:2]
   mask_center_yx = tf.stack([y, x])
-  with tf.control_dependencies([
+  with assert_control_dependencies([
       tf.debugging.assert_greater_equal(
           patch_size, 1,
           message='Patch size must be >= 1'),
