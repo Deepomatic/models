@@ -86,7 +86,7 @@ class SSDEfficientNetBiFPNKerasFeatureExtractor(
         to freeze batch norm update and use pretrained batch norm params.
       inplace_batchnorm_update: whether to update batch norm moving average
         values inplace. When this is false train op must add a control
-        dependency on tf.graphkeys.UPDATE_OPS collection in order to update
+        dependency on tf.compat.v1.GraphKeys.UPDATE_OPS collection in order to update
         batch norm statistics.
       bifpn_min_level: the highest resolution feature map to use in BiFPN. The
         valid values are {2, 3, 4, 5} which map to Resnet blocks {1, 2, 3, 4}
@@ -279,7 +279,7 @@ class SSDEfficientNetB0BiFPNKerasFeatureExtractor(
         to freeze batch norm update and use pretrained batch norm params.
       inplace_batchnorm_update: whether to update batch norm moving average
         values inplace. When this is false train op must add a control
-        dependency on tf.graphkeys.UPDATE_OPS collection in order to update
+        dependency on tf.compat.v1.GraphKeys.UPDATE_OPS collection in order to update
         batch norm statistics.
       bifpn_min_level: the highest resolution feature map to use in BiFPN. The
         valid values are {2, 3, 4, 5} which map to Resnet blocks {1, 2, 3, 4}
@@ -369,7 +369,7 @@ class SSDEfficientNetB1BiFPNKerasFeatureExtractor(
         to freeze batch norm update and use pretrained batch norm params.
       inplace_batchnorm_update: whether to update batch norm moving average
         values inplace. When this is false train op must add a control
-        dependency on tf.graphkeys.UPDATE_OPS collection in order to update
+        dependency on tf.compat.v1.GraphKeys.UPDATE_OPS collection in order to update
         batch norm statistics.
       bifpn_min_level: the highest resolution feature map to use in BiFPN. The
         valid values are {2, 3, 4, 5} which map to Resnet blocks {1, 2, 3, 4}
@@ -460,7 +460,7 @@ class SSDEfficientNetB2BiFPNKerasFeatureExtractor(
         to freeze batch norm update and use pretrained batch norm params.
       inplace_batchnorm_update: whether to update batch norm moving average
         values inplace. When this is false train op must add a control
-        dependency on tf.graphkeys.UPDATE_OPS collection in order to update
+        dependency on tf.compat.v1.GraphKeys.UPDATE_OPS collection in order to update
         batch norm statistics.
       bifpn_min_level: the highest resolution feature map to use in BiFPN. The
         valid values are {2, 3, 4, 5} which map to Resnet blocks {1, 2, 3, 4}
@@ -551,7 +551,7 @@ class SSDEfficientNetB3BiFPNKerasFeatureExtractor(
         to freeze batch norm update and use pretrained batch norm params.
       inplace_batchnorm_update: whether to update batch norm moving average
         values inplace. When this is false train op must add a control
-        dependency on tf.graphkeys.UPDATE_OPS collection in order to update
+        dependency on tf.compat.v1.GraphKeys.UPDATE_OPS collection in order to update
         batch norm statistics.
       bifpn_min_level: the highest resolution feature map to use in BiFPN. The
         valid values are {2, 3, 4, 5} which map to Resnet blocks {1, 2, 3, 4}
@@ -642,7 +642,7 @@ class SSDEfficientNetB4BiFPNKerasFeatureExtractor(
         to freeze batch norm update and use pretrained batch norm params.
       inplace_batchnorm_update: whether to update batch norm moving average
         values inplace. When this is false train op must add a control
-        dependency on tf.graphkeys.UPDATE_OPS collection in order to update
+        dependency on tf.compat.v1.GraphKeys.UPDATE_OPS collection in order to update
         batch norm statistics.
       bifpn_min_level: the highest resolution feature map to use in BiFPN. The
         valid values are {2, 3, 4, 5} which map to Resnet blocks {1, 2, 3, 4}
@@ -733,7 +733,7 @@ class SSDEfficientNetB5BiFPNKerasFeatureExtractor(
         to freeze batch norm update and use pretrained batch norm params.
       inplace_batchnorm_update: whether to update batch norm moving average
         values inplace. When this is false train op must add a control
-        dependency on tf.graphkeys.UPDATE_OPS collection in order to update
+        dependency on tf.compat.v1.GraphKeys.UPDATE_OPS collection in order to update
         batch norm statistics.
       bifpn_min_level: the highest resolution feature map to use in BiFPN. The
         valid values are {2, 3, 4, 5} which map to Resnet blocks {1, 2, 3, 4}
@@ -829,7 +829,7 @@ class SSDEfficientNetB6BiFPNKerasFeatureExtractor(
         to freeze batch norm update and use pretrained batch norm params.
       inplace_batchnorm_update: whether to update batch norm moving average
         values inplace. When this is false train op must add a control
-        dependency on tf.graphkeys.UPDATE_OPS collection in order to update
+        dependency on tf.compat.v1.GraphKeys.UPDATE_OPS collection in order to update
         batch norm statistics.
       bifpn_min_level: the highest resolution feature map to use in BiFPN. The
         valid values are {2, 3, 4, 5} which map to Resnet blocks {1, 2, 3, 4}
@@ -920,7 +920,7 @@ class SSDEfficientNetB7BiFPNKerasFeatureExtractor(
         to freeze batch norm update and use pretrained batch norm params.
       inplace_batchnorm_update: whether to update batch norm moving average
         values inplace. When this is false train op must add a control
-        dependency on tf.graphkeys.UPDATE_OPS collection in order to update
+        dependency on tf.compat.v1.GraphKeys.UPDATE_OPS collection in order to update
         batch norm statistics.
       bifpn_min_level: the highest resolution feature map to use in BiFPN. The
         valid values are {2, 3, 4, 5} which map to Resnet blocks {1, 2, 3, 4}

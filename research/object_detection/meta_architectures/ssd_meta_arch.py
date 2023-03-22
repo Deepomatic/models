@@ -179,7 +179,7 @@ class SSDKerasFeatureExtractor(tf.keras.Model):
         params.
       inplace_batchnorm_update: Whether to update batch norm moving average
         values inplace. When this is false train op must add a control
-        dependency on tf.graphkeys.UPDATE_OPS collection in order to update
+        dependency on tf.compat.v1.GraphKeys.UPDATE_OPS collection in order to update
         batch norm statistics.
       use_explicit_padding: Whether to use explicit padding when extracting
         features. Default is False.
@@ -336,7 +336,7 @@ class SSDMetaArch(model.DetectionModel):
         params.
       inplace_batchnorm_update: Whether to update batch norm moving average
         values inplace. When this is false train op must add a control
-        dependency on tf.graphkeys.UPDATE_OPS collection in order to update
+        dependency on tf.compat.v1.GraphKeys.UPDATE_OPS collection in order to update
         batch norm statistics.
       add_background_class: Whether to add an implicit background class to
         one-hot encodings of groundtruth labels. Set to false if training a
@@ -565,7 +565,7 @@ class SSDMetaArch(model.DetectionModel):
     if self._inplace_batchnorm_update:
       batchnorm_updates_collections = None
     else:
-      batchnorm_updates_collections = tf.GraphKeys.UPDATE_OPS
+      batchnorm_updates_collections = tf.compat.v1.GraphKeys.UPDATE_OPS
     if self._feature_extractor.is_keras_model:
       feature_maps = self._feature_extractor(preprocessed_inputs)
     else:
@@ -1240,7 +1240,7 @@ class SSDMetaArch(model.DetectionModel):
       A list of regularization loss tensors.
     """
     losses = []
-    slim_losses = tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES)
+    slim_losses = tf.compat.v1.get_collection(tf.compat.v1.GraphKeys.REGULARIZATION_LOSSES)
     # Copy the slim losses to avoid modifying the collection
     if slim_losses:
       losses.extend(slim_losses)
@@ -1351,7 +1351,7 @@ class SSDMetaArch(model.DetectionModel):
       A list of update operators.
     """
     update_ops = []
-    slim_update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+    slim_update_ops = tf.compat.v1.get_collection(tf.compat.v1.GraphKeys.UPDATE_OPS)
     # Copy the slim ops to avoid modifying the collection
     if slim_update_ops:
       update_ops.extend(slim_update_ops)

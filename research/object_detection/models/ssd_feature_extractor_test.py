@@ -260,4 +260,4 @@ class SsdFeatureExtractorTestBase(test_case.TestCase):
           preprocessed_inputs,
           feature_extractor,
           use_keras=use_keras)
-      return g.get_collection(tf.GraphKeys.GLOBAL_VARIABLES)
+      return g.get_collection(tf.compat.v1.GraphKeys.GLOBAL_VARIABLES)

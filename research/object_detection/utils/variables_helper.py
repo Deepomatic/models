@@ -152,7 +152,7 @@ def get_variables_available_in_checkpoint(variables,
   ckpt_reader = tf.train.NewCheckpointReader(checkpoint_path)
   ckpt_vars_to_shape_map = ckpt_reader.get_variable_to_shape_map()
   if not include_global_step:
-    ckpt_vars_to_shape_map.pop(tf.GraphKeys.GLOBAL_STEP, None)
+    ckpt_vars_to_shape_map.pop(tf.compat.v1.GraphKeys.GLOBAL_STEP, None)
   vars_in_ckpt = {}
   for variable_name, variable in sorted(variable_names_map.items()):
     if variable_name in ckpt_vars_to_shape_map:

@@ -731,7 +731,7 @@ def create_model_fn(detection_model_fn,
             sharded=True,
             keep_checkpoint_every_n_hours=keep_checkpoint_every_n_hours,
             save_relative_paths=True)
-        tf.add_to_collection(tf.GraphKeys.SAVERS, saver)
+        tf.add_to_collection(tf.compat.v1.GraphKeys.SAVERS, saver)
         scaffold = tf.train.Scaffold(saver=saver)
       return tf_estimator.EstimatorSpec(
           mode=mode,

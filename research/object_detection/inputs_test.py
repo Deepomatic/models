@@ -89,7 +89,7 @@ def _make_initializable_iterator(dataset):
     A `tf.data.Iterator`.
   """
   iterator = tf.data.make_initializable_iterator(dataset)
-  tf.add_to_collection(tf.GraphKeys.TABLE_INITIALIZERS, iterator.initializer)
+  tf.add_to_collection(tf.compat.v1.GraphKeys.TABLE_INITIALIZERS, iterator.initializer)
   return iterator
 
 

@@ -394,7 +394,7 @@ class SsdMobilenetV2FpnFeatureExtractorTest(
         expected_feature_maps_variables = (
             slim_expected_feature_maps_variables_with_depthwise)
       actual_variable_set = set([
-          var.op.name for var in g.get_collection(tf.GraphKeys.GLOBAL_VARIABLES)
+          var.op.name for var in g.get_collection(tf.compat.v1.GraphKeys.GLOBAL_VARIABLES)
       ])
       variable_intersection = expected_feature_maps_variables.intersection(
           actual_variable_set)

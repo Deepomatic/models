@@ -46,7 +46,7 @@ def make_initializable_iterator(dataset):
     A `tf.data.Iterator`.
   """
   iterator = dataset.make_initializable_iterator()
-  tf.add_to_collection(tf.GraphKeys.TABLE_INITIALIZERS, iterator.initializer)
+  tf.add_to_collection(tf.compat.v1.GraphKeys.TABLE_INITIALIZERS, iterator.initializer)
   return iterator
 
 

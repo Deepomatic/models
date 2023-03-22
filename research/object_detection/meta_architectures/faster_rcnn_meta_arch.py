@@ -2789,7 +2789,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
       A list of regularization loss tensors.
     """
     all_losses = []
-    slim_losses = tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES)
+    slim_losses = tf.compat.v1.get_collection(tf.compat.v1.GraphKeys.REGULARIZATION_LOSSES)
     # Copy the slim losses to avoid modifying the collection
     if slim_losses:
       all_losses.extend(slim_losses)
@@ -2913,7 +2913,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
       A list of update operators.
     """
     update_ops = []
-    slim_update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+    slim_update_ops = tf.compat.v1.get_collection(tf.compat.v1.GraphKeys.UPDATE_OPS)
     # Copy the slim ops to avoid modifying the collection
     if slim_update_ops:
       update_ops.extend(slim_update_ops)

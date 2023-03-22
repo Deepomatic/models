@@ -55,7 +55,7 @@ class SpaghettiNet():
   def _quant_var(self,
                  name,
                  initializer_val,
-                 vars_collection=tf.GraphKeys.MOVING_AVERAGE_VARIABLES):
+                 vars_collection=tf.compat.v1.GraphKeys.MOVING_AVERAGE_VARIABLES):
     """Create an var for storing the min/max quantization range."""
     return slim.model_variable(
         name,
