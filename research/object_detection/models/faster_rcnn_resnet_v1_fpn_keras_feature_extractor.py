@@ -216,8 +216,8 @@ class FasterRCNNResnetV1FpnKerasFeatureExtractor(
       And returns rpn_feature_map:
         A list of tensors with shape [batch, height, width, depth]
     """
-    with tf.name_scope(name):
-      with tf.name_scope('ResnetV1FPN'):
+    with tf.compat.v1.name_scope(name):
+      with tf.compat.v1.name_scope('ResnetV1FPN'):
         full_resnet_v1_model = self._resnet_v1_base_model(
             batchnorm_training=self._train_batch_norm,
             conv_hyperparams=(self._conv_hyperparams if
@@ -294,8 +294,8 @@ class FasterRCNNResnetV1FpnKerasFeatureExtractor(
         [batch_size * self.max_num_proposals, 1, 1, 1024]
         representing box classifier features for each proposal.
     """
-    with tf.name_scope(name):
-      with tf.name_scope('ResnetV1FPN'):
+    with tf.compat.v1.name_scope(name):
+      with tf.compat.v1.name_scope('ResnetV1FPN'):
         feature_extractor_model = tf.keras.models.Sequential([
             tf.keras.layers.Flatten(),
             tf.keras.layers.Dense(units=1024, activation='relu'),

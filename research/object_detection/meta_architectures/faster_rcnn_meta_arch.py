@@ -685,7 +685,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
       ValueError: if inputs tensor does not have type tf.float32
     """
 
-    with tf.name_scope('Preprocessor'):
+    with tf.compat.v1.name_scope('Preprocessor'):
       (resized_inputs,
        true_image_shapes) = shape_utils.resize_images_and_return_shapes(
            inputs, self._image_resizer_fn)
@@ -1508,7 +1508,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
         rpn_features_to_crop is not in the prediction_dict.
     """
 
-    with tf.name_scope('FirstStagePostprocessor'):
+    with tf.compat.v1.name_scope('FirstStagePostprocessor'):
       if self._number_of_stages == 1:
 
         image_shapes = self._image_batch_shape_2d(
@@ -1537,7 +1537,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
     # TODO(jrru): Remove mask_predictions from _post_process_box_classifier.
     if (self._number_of_stages == 2 or
         (self._number_of_stages == 3 and self._is_training)):
-      with tf.name_scope('SecondStagePostprocessor'):
+      with tf.compat.v1.name_scope('SecondStagePostprocessor'):
         mask_predictions = prediction_dict.get(box_predictor.MASK_PREDICTIONS)
         detections_dict = self._postprocess_box_classifier(
             prediction_dict['refined_box_encodings'],
@@ -1607,7 +1607,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
         [batch size, max_detections, height, width, depth] representing
         cropped image features
     """
-    with tf.name_scope('SecondStageDetectionFeaturesExtract'):
+    with tf.compat.v1.name_scope('SecondStageDetectionFeaturesExtract'):
       flattened_detected_feature_maps = (
           self._compute_second_stage_input_feature_maps(
               rpn_features_to_crop, detection_boxes, image_shape))
@@ -1657,7 +1657,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
         [batch size, max_detections, height, width, depth] representing
         cropped image features
     """
-    with tf.name_scope('FirstStageDetectionFeaturesExtract'):
+    with tf.compat.v1.name_scope('FirstStageDetectionFeaturesExtract'):
       flattened_detected_feature_maps = (
           self._compute_second_stage_input_feature_maps(
               rpn_features_to_crop, detection_boxes, image_shape))
@@ -2259,7 +2259,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
         'second_stage_classification_loss') to scalar tensors representing
         corresponding loss values.
     """
-    with tf.name_scope(scope, 'Loss', prediction_dict.values()):
+    with tf.compat.v1.name_scope(scope, 'Loss', prediction_dict.values()):
       (groundtruth_boxlists, groundtruth_classes_with_background_list,
        groundtruth_masks_list, groundtruth_weights_list
       ) = self._format_groundtruth_data(
@@ -2319,7 +2319,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
         `first_stage_objectness_loss`) to scalar tensors representing
         corresponding loss values.
     """
-    with tf.name_scope('RPNLoss'):
+    with tf.compat.v1.name_scope('RPNLoss'):
       (batch_cls_targets, batch_cls_weights, batch_reg_targets,
        batch_reg_weights, _) = target_assigner.batch_assign_targets(
            target_assigner=self._proposal_target_assigner,
@@ -2447,7 +2447,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
         second_stage_mask_rcnn_box_predictor is True and
         `groundtruth_masks_list` is not provided.
     """
-    with tf.name_scope('BoxClassifierLoss'):
+    with tf.compat.v1.name_scope('BoxClassifierLoss'):
       paddings_indicator = self._padded_batched_proposals_indicator(
           num_proposals, proposal_boxes.shape[1])
       proposal_boxlists = [

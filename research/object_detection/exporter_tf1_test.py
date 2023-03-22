@@ -1167,14 +1167,14 @@ class ExportInferenceGraphTest(tf.test.TestCase):
   def test_rewrite_nn_resize_op_multiple_path(self):
     g = tf.Graph()
     with g.as_default():
-      with tf.name_scope('nearest_upsampling'):
+      with tf.compat.v1.name_scope('nearest_upsampling'):
         x_1 = array_ops.placeholder(dtypes.float32, shape=(8, 10, 10, 8))
         x_1_stack_1 = tf.stack([x_1] * 2, axis=3)
         x_1_reshape_1 = tf.reshape(x_1_stack_1, [8, 10, 20, 8])
         x_1_stack_2 = tf.stack([x_1_reshape_1] * 2, axis=2)
         x_1_reshape_2 = tf.reshape(x_1_stack_2, [8, 20, 20, 8])
 
-      with tf.name_scope('nearest_upsampling'):
+      with tf.compat.v1.name_scope('nearest_upsampling'):
         x_2 = array_ops.placeholder(dtypes.float32, shape=(8, 10, 10, 8))
         x_2_stack_1 = tf.stack([x_2] * 2, axis=3)
         x_2_reshape_1 = tf.reshape(x_2_stack_1, [8, 10, 20, 8])

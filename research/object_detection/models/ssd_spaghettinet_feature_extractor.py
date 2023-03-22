@@ -248,7 +248,7 @@ class SpaghettiNet():
         padding='SAME',
         scope=scope + '/1x1_before_upsample')
     if self._use_native_resize_op:
-      with tf.name_scope(scope + '/nearest_neighbor_upsampling'):
+      with tf.compat.v1.name_scope(scope + '/nearest_neighbor_upsampling'):
         input_shape = shape_utils.combined_static_and_dynamic_shape(node_pre_up)
         node_up = tf.image.resize_nearest_neighbor(
             node_pre_up,

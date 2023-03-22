@@ -234,7 +234,7 @@ def _rgb_to_grayscale(images, name=None):
   Returns:
     The converted grayscale image(s).
   """
-  with tf.name_scope(name, 'rgb_to_grayscale', [images]) as name:
+  with tf.compat.v1.name_scope(name, 'rgb_to_grayscale', [images]) as name:
     images = tf.convert_to_tensor(images, name='images')
     # Remember original dtype to so we can convert back if needed
     orig_dtype = images.dtype
@@ -268,7 +268,7 @@ def normalize_image(image, original_minval, original_maxval, target_minval,
   Returns:
     image: image which is the same shape as input image.
   """
-  with tf.name_scope('NormalizeImage', values=[image]):
+  with tf.compat.v1.name_scope('NormalizeImage', values=[image]):
     original_minval = float(original_minval)
     original_maxval = float(original_maxval)
     target_minval = float(target_minval)
@@ -327,7 +327,7 @@ def retain_boxes_above_threshold(boxes,
     retained_masks: [num_retained_instance, height, width]
     retained_keypoints: [num_retained_instance, num_keypoints, 2]
   """
-  with tf.name_scope('RetainBoxesAboveThreshold',
+  with tf.compat.v1.name_scope('RetainBoxesAboveThreshold',
                      values=[boxes, labels, label_weights]):
     indices = tf.where(
         tf.logical_or(label_weights > threshold, tf.is_nan(label_weights)))
@@ -404,7 +404,7 @@ def drop_label_probabilistically(boxes,
     retained_masks: [num_retained_instance, height, width]
     retained_keypoints: [num_retained_instance, num_keypoints, 2]
   """
-  with tf.name_scope('DropLabelProbabilistically',
+  with tf.compat.v1.name_scope('DropLabelProbabilistically',
                      values=[boxes, labels]):
     indices = tf.where(
         tf.logical_or(
@@ -665,7 +665,7 @@ def random_horizontal_flip(image,
     raise ValueError(
         'Must provide both `densepose_part_ids` and `densepose_surface_coords`')
 
-  with tf.name_scope('RandomHorizontalFlip', values=[image, boxes]):
+  with tf.compat.v1.name_scope('RandomHorizontalFlip', values=[image, boxes]):
     result = []
     # random variable defining whether to do flip or not
     generator_func = functools.partial(tf.random_uniform, [], seed=seed)
@@ -800,7 +800,7 @@ def random_vertical_flip(image,
     raise ValueError(
         'keypoints are provided but keypoints_flip_permutation is not provided')
 
-  with tf.name_scope('RandomVerticalFlip', values=[image, boxes]):
+  with tf.compat.v1.name_scope('RandomVerticalFlip', values=[image, boxes]):
     result = []
     # random variable defining whether to do flip or not
     generator_func = functools.partial(tf.random_uniform, [], seed=seed)
@@ -894,7 +894,7 @@ def random_rotation90(image,
     image_rotated = tf.image.rot90(image)
     return image_rotated
 
-  with tf.name_scope('RandomRotation90', values=[image, boxes]):
+  with tf.compat.v1.name_scope('RandomRotation90', values=[image, boxes]):
     result = []
 
     # random variable defining whether to rotate by 90 degrees or not
@@ -957,7 +957,7 @@ def random_pixel_value_scale(image,
   Returns:
     image: image which is the same shape as input image.
   """
-  with tf.name_scope('RandomPixelValueScale', values=[image]):
+  with tf.compat.v1.name_scope('RandomPixelValueScale', values=[image]):
     generator_func = functools.partial(
         tf.random_uniform, tf.shape(image),
         minval=minval, maxval=maxval,
@@ -999,7 +999,7 @@ def random_image_scale(image,
     masks: If masks is not none, resized masks which are the same rank as input
       masks will be returned.
   """
-  with tf.name_scope('RandomImageScale', values=[image]):
+  with tf.compat.v1.name_scope('RandomImageScale', values=[image]):
     result = []
     image_shape = tf.shape(image)
     image_height = image_shape[0]
@@ -1066,7 +1066,7 @@ def random_rgb_to_gray(image,
     image_gray3 = tf.image.grayscale_to_rgb(image_gray1)
     return image_gray3
 
-  with tf.name_scope('RandomRGBtoGray', values=[image]):
+  with tf.compat.v1.name_scope('RandomRGBtoGray', values=[image]):
     # random variable defining whether to change to grayscale or not
     generator_func = functools.partial(tf.random_uniform, [], seed=seed)
     do_gray_random = _get_or_create_preprocess_rand_vars(
@@ -1092,7 +1092,7 @@ def adjust_gamma(image, gamma=1.0, gain=1.0):
   Returns:
     image: image which is the same shape as input image.
   """
-  with tf.name_scope('AdjustGamma', values=[image]):
+  with tf.compat.v1.name_scope('AdjustGamma', values=[image]):
     def _adjust_gamma(image):
       image = tf.image.adjust_gamma(image / 255, gamma, gain) * 255
       image = tf.clip_by_value(image, clip_value_min=0.0, clip_value_max=255.0)
@@ -1123,7 +1123,7 @@ def random_adjust_brightness(image,
   Returns:
     image: image which is the same shape as input image.
   """
-  with tf.name_scope('RandomAdjustBrightness', values=[image]):
+  with tf.compat.v1.name_scope('RandomAdjustBrightness', values=[image]):
     generator_func = functools.partial(tf.random_uniform, [],
                                        -max_delta, max_delta, seed=seed)
     delta = _get_or_create_preprocess_rand_vars(
@@ -1165,7 +1165,7 @@ def random_adjust_contrast(image,
   Returns:
     image: image which is the same shape as input image.
   """
-  with tf.name_scope('RandomAdjustContrast', values=[image]):
+  with tf.compat.v1.name_scope('RandomAdjustContrast', values=[image]):
     generator_func = functools.partial(tf.random_uniform, [],
                                        min_delta, max_delta, seed=seed)
     contrast_factor = _get_or_create_preprocess_rand_vars(
@@ -1202,7 +1202,7 @@ def random_adjust_hue(image,
   Returns:
     image: image which is the same shape as input image.
   """
-  with tf.name_scope('RandomAdjustHue', values=[image]):
+  with tf.compat.v1.name_scope('RandomAdjustHue', values=[image]):
     generator_func = functools.partial(tf.random_uniform, [],
                                        -max_delta, max_delta, seed=seed)
     delta = _get_or_create_preprocess_rand_vars(
@@ -1241,7 +1241,7 @@ def random_adjust_saturation(image,
   Returns:
     image: image which is the same shape as input image.
   """
-  with tf.name_scope('RandomAdjustSaturation', values=[image]):
+  with tf.compat.v1.name_scope('RandomAdjustSaturation', values=[image]):
     generator_func = functools.partial(tf.random_uniform, [],
                                        min_delta, max_delta, seed=seed)
     saturation_factor = _get_or_create_preprocess_rand_vars(
@@ -1277,7 +1277,7 @@ def random_distort_color(image, color_ordering=0, preprocess_vars_cache=None):
   Raises:
     ValueError: if color_ordering is not in {0, 1}.
   """
-  with tf.name_scope('RandomDistortColor', values=[image]):
+  with tf.compat.v1.name_scope('RandomDistortColor', values=[image]):
     if color_ordering == 0:
       image = random_adjust_brightness(
           image, max_delta=32. / 255.,
@@ -1340,7 +1340,7 @@ def random_jitter_boxes(boxes, ratio=0.05, jitter_mode='default', seed=None):
   Returns:
     boxes: boxes which is the same shape as input boxes.
   """
-  with tf.name_scope('RandomJitterBoxes'):
+  with tf.compat.v1.name_scope('RandomJitterBoxes'):
     ymin, xmin, ymax, xmax = (boxes[:, i] for i in range(4))
 
     blist = box_list.BoxList(boxes)
@@ -1517,7 +1517,7 @@ def _strict_random_crop_image(image,
   Raises:
     ValueError: If some but not all of the DensePose tensors are provided.
   """
-  with tf.name_scope('RandomCropImage', values=[image, boxes]):
+  with tf.compat.v1.name_scope('RandomCropImage', values=[image, boxes]):
     densepose_tensors = [densepose_num_points, densepose_part_ids,
                          densepose_surface_coords]
     if (any(t is not None for t in densepose_tensors) and
@@ -2299,7 +2299,7 @@ def random_crop_to_aspect_ratio(image,
   if len(image.get_shape()) != 3:
     raise ValueError('Image should be 3D tensor')
 
-  with tf.name_scope('RandomCropToAspectRatio', values=[image]):
+  with tf.compat.v1.name_scope('RandomCropToAspectRatio', values=[image]):
     image_shape = tf.shape(image)
     orig_height = image_shape[0]
     orig_width = image_shape[1]
@@ -2474,7 +2474,7 @@ def random_pad_to_aspect_ratio(image,
   if len(image.get_shape()) != 3:
     raise ValueError('Image should be 3D tensor')
 
-  with tf.name_scope('RandomPadToAspectRatio', values=[image]):
+  with tf.compat.v1.name_scope('RandomPadToAspectRatio', values=[image]):
     image_shape = tf.shape(image)
     image_height = tf.cast(image_shape[0], dtype=tf.float32)
     image_width = tf.cast(image_shape[1], dtype=tf.float32)
@@ -2618,7 +2618,7 @@ def random_black_patches(image,
     image = tf.multiply(image, mask)
     return image
 
-  with tf.name_scope('RandomBlackPatchInImage', values=[image]):
+  with tf.compat.v1.name_scope('RandomBlackPatchInImage', values=[image]):
     for idx in range(max_black_patches):
       generator_func = functools.partial(tf.random_uniform, [],
                                          minval=0.0, maxval=1.0,
@@ -2679,7 +2679,7 @@ def random_jpeg_quality(image,
     adjusted_image = tf.image.adjust_jpeg_quality(image_uint8, quality)
     return tf.cast(adjusted_image, tf.float32)
 
-  with tf.name_scope('RandomJpegQuality', values=[image]):
+  with tf.compat.v1.name_scope('RandomJpegQuality', values=[image]):
     generator_func = functools.partial(tf.random_uniform, [], seed=seed)
     do_encoding_random = _get_or_create_preprocess_rand_vars(
         generator_func, preprocessor_cache.PreprocessorCache.JPEG_QUALITY,
@@ -2747,7 +2747,7 @@ def random_downscale_to_target_pixels(image,
                                            target_width)
     return new_image, new_masks
 
-  with tf.name_scope('RandomDownscaleToTargetPixels', values=[image]):
+  with tf.compat.v1.name_scope('RandomDownscaleToTargetPixels', values=[image]):
     generator_fn = functools.partial(tf.random_uniform, [], seed=seed)
     do_downscale_random = _get_or_create_preprocess_rand_vars(
         generator_fn,
@@ -2898,7 +2898,7 @@ def random_patch_gaussian(image,
     patched_image = tf.where(patch_mask, image_plus_gaussian, scaled_image)
     return patched_image * 255.0
 
-  with tf.name_scope('RandomPatchGaussian', values=[image]):
+  with tf.compat.v1.name_scope('RandomPatchGaussian', values=[image]):
     image = tf.cast(image, tf.float32)
     patch_gaussian_random = get_or_create_rand_vars_fn(
         functools.partial(tf.random_uniform, [], seed=seed))
@@ -2957,7 +2957,7 @@ def image_to_float(image):
   Returns:
     image: image in tf.float32 format.
   """
-  with tf.name_scope('ImageToFloat', values=[image]):
+  with tf.compat.v1.name_scope('ImageToFloat', values=[image]):
     image = tf.cast(image, dtype=tf.float32)
     return image
 
@@ -3052,7 +3052,7 @@ def resize_to_range(image,
         image, tf.stack([max_dimension, min_dimension]), method=method,
         align_corners=align_corners, preserve_aspect_ratio=True)
 
-  with tf.name_scope('ResizeToRange', values=[image, min_dimension]):
+  with tf.compat.v1.name_scope('ResizeToRange', values=[image, min_dimension]):
     if image.get_shape().is_fully_defined():
       if image.get_shape()[0] < image.get_shape()[1]:
         new_image = _resize_landscape_image(image)
@@ -3140,7 +3140,7 @@ def resize_to_min_dimension(image, masks=None, min_dimension=600,
   if len(image.get_shape()) != 3:
     raise ValueError('Image should be 3D tensor')
 
-  with tf.name_scope('ResizeGivenMinDimension', values=[image, min_dimension]):
+  with tf.compat.v1.name_scope('ResizeGivenMinDimension', values=[image, min_dimension]):
     (image_height, image_width, num_channels) = _get_image_info(image)
     min_image_dimension = tf.minimum(image_height, image_width)
     min_target_dimension = tf.maximum(min_image_dimension, min_dimension)
@@ -3198,7 +3198,7 @@ def resize_to_max_dimension(image, masks=None, max_dimension=600,
   if len(image.get_shape()) != 3:
     raise ValueError('Image should be 3D tensor')
 
-  with tf.name_scope('ResizeGivenMaxDimension', values=[image, max_dimension]):
+  with tf.compat.v1.name_scope('ResizeGivenMaxDimension', values=[image, max_dimension]):
     (image_height, image_width, num_channels) = _get_image_info(image)
     max_image_dimension = tf.maximum(image_height, image_width)
     max_target_dimension = tf.minimum(max_image_dimension, max_dimension)
@@ -3250,7 +3250,7 @@ def resize_pad_to_multiple(image, masks=None, multiple=1):
   if len(image.get_shape()) != 3:
     raise ValueError('Image should be 3D tensor')
 
-  with tf.name_scope('ResizePadToMultiple', values=[image, multiple]):
+  with tf.compat.v1.name_scope('ResizePadToMultiple', values=[image, multiple]):
     image_height, image_width, num_channels = _get_image_info(image)
     image = image[tf.newaxis, :, :, :]
     image = ops.pad_to_multiple(image, multiple)[0, :, :, :]
@@ -3330,7 +3330,7 @@ def resize_image(image,
     resized_image_shape: A 1D tensor of shape [3] containing the shape of the
       resized image.
   """
-  with tf.name_scope(
+  with tf.compat.v1.name_scope(
       'ResizeImage',
       values=[image, new_height, new_width, method, align_corners]):
     new_image = tf.image.resize_images(
@@ -3377,7 +3377,7 @@ def subtract_channel_mean(image, means=None):
     ValueError: if images is not a 4D tensor or if the number of means is not
       equal to the number of channels.
   """
-  with tf.name_scope('SubtractChannelMean', values=[image, means]):
+  with tf.compat.v1.name_scope('SubtractChannelMean', values=[image, means]):
     if len(image.get_shape()) != 3:
       raise ValueError('Input must be of size [height, width, channels]')
     if len(means) != image.get_shape()[-1]:
@@ -3402,7 +3402,7 @@ def one_hot_encoding(labels, num_classes=None):
   Raises:
     ValueError: if num_classes is not specified.
   """
-  with tf.name_scope('OneHotEncoding', values=[labels]):
+  with tf.compat.v1.name_scope('OneHotEncoding', values=[labels]):
     if num_classes is None:
       raise ValueError('num_classes must be specified')
 

@@ -478,7 +478,7 @@ class SSDMetaArch(model.DetectionModel):
     Raises:
       ValueError: if inputs tensor does not have type tf.float32
     """
-    with tf.name_scope('Preprocessor'):
+    with tf.compat.v1.name_scope('Preprocessor'):
       normalized_inputs = self._feature_extractor.preprocess(inputs)
       return shape_utils.resize_images_and_return_shapes(
           normalized_inputs, self._image_resizer_fn)
@@ -713,7 +713,7 @@ class SSDMetaArch(model.DetectionModel):
       raise ValueError('prediction_dict does not contain expected entries.')
     if 'anchors' not in prediction_dict:
       prediction_dict['anchors'] = self.anchors.get()
-    with tf.name_scope('Postprocessor'):
+    with tf.compat.v1.name_scope('Postprocessor'):
       preprocessed_images = prediction_dict['preprocessed_inputs']
       box_encodings = prediction_dict['box_encodings']
       box_encodings = tf.identity(box_encodings, 'raw_box_encodings')
@@ -829,7 +829,7 @@ class SSDMetaArch(model.DetectionModel):
         `classification_loss`) to scalar tensors representing corresponding loss
         values.
     """
-    with tf.name_scope(scope, 'Loss', prediction_dict.values()):
+    with tf.compat.v1.name_scope(scope, 'Loss', prediction_dict.values()):
       keypoints = None
       if self.groundtruth_has_field(fields.BoxListFields.keypoints):
         keypoints = self.groundtruth_lists(fields.BoxListFields.keypoints)

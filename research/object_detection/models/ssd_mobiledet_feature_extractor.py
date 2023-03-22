@@ -36,7 +36,7 @@ def _scale_filters(filters, multiplier, base=8):
 
 
 def _swish6(h):
-  with tf.name_scope('swish6'):
+  with tf.compat.v1.name_scope('swish6'):
     return h * tf.nn.relu6(h + np.float32(3)) * np.float32(1. / 6.)
 
 

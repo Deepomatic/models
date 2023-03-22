@@ -249,7 +249,7 @@ def export_tflite_graph(pipeline_config,
   class_predictions = score_conversion_fn(
       predicted_tensors['class_predictions_with_background'])
 
-  with tf.name_scope('raw_outputs'):
+  with tf.compat.v1.name_scope('raw_outputs'):
     # 'raw_outputs/box_encodings': a float32 tensor of shape [1, num_anchors, 4]
     #  containing the encoded box predictions. Note that these are raw
     #  predictions and no Non-Max suppression is applied on them and
