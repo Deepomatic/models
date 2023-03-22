@@ -24,7 +24,7 @@ import unittest
 from absl.testing import parameterized
 import numpy as np
 from six.moves import zip
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from google.protobuf import text_format
 from object_detection.builders import hyperparams_builder

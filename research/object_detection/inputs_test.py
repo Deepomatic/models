@@ -25,7 +25,7 @@ from absl import logging
 from absl.testing import parameterized
 import numpy as np
 import six
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection import inputs
 from object_detection.core import preprocessor
@@ -39,8 +39,6 @@ if six.PY2:
   import mock  # pylint: disable=g-import-not-at-top
 else:
   from unittest import mock  # pylint: disable=g-import-not-at-top, g-importing-member
-
-FLAGS = tf.flags.FLAGS
 
 
 def _get_configs_for_model(model_name):
@@ -91,7 +89,7 @@ def _make_initializable_iterator(dataset):
     A `tf.data.Iterator`.
   """
   iterator = tf.data.make_initializable_iterator(dataset)
-  tf.add_to_collection(tf.GraphKeys.TABLE_INITIALIZERS, iterator.initializer)
+  tf.add_to_collection(tf.compat.v1.GraphKeys.TABLE_INITIALIZERS, iterator.initializer)
   return iterator
 
 

@@ -21,7 +21,7 @@ from __future__ import print_function
 import os
 import numpy as np
 from six.moves import range
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from google.protobuf import text_format
 
@@ -44,7 +44,7 @@ except ImportError:
 def get_iterator_next_for_testing(dataset, is_tf2):
   iterator = dataset.make_initializable_iterator()
   if not is_tf2:
-    tf.add_to_collection(tf.GraphKeys.TABLE_INITIALIZERS, iterator.initializer)
+    tf.add_to_collection(tf.compat.v1.GraphKeys.TABLE_INITIALIZERS, iterator.initializer)
   return iterator.get_next()
 
 
@@ -504,14 +504,14 @@ class ReadDatasetTest(test_case.TestCase):
 
     for i in range(5):
       path = self._path_template % i
-      with tf.gfile.Open(path, 'wb') as f:
+      with tf.io.gfile.Open(path, 'wb') as f:
         f.write('\n'.join([str(i + 1), str((i + 1) * 10)]))
 
     self._shuffle_path_template = os.path.join(self.get_temp_dir(),
                                                'shuffle_%s.txt')
     for i in range(2):
       path = self._shuffle_path_template % i
-      with tf.gfile.Open(path, 'wb') as f:
+      with tf.io.gfile.Open(path, 'wb') as f:
         f.write('\n'.join([str(i)] * 5))
 
     super(ReadDatasetTest, self).setUp()

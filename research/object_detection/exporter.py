@@ -16,7 +16,7 @@
 """Functions to export object detection inference graph."""
 import os
 import tempfile
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 import tf_slim as slim
 from tensorflow.core.protobuf import saver_pb2
 from tensorflow.python.tools import freeze_graph  # pylint: disable=g-direct-tensorflow-import
@@ -501,7 +501,7 @@ def _export_inference_graph(input_type,
                             side_input_names=None,
                             side_input_types=None):
   """Export helper."""
-  tf.gfile.MakeDirs(output_directory)
+  tf.io.gfile.MakeDirs(output_directory)
   frozen_graph_path = os.path.join(output_directory,
                                    'frozen_inference_graph.pb')
   saved_model_path = os.path.join(output_directory, 'saved_model')
@@ -549,7 +549,7 @@ def _export_inference_graph(input_type,
                                         'inference_graph.pbtxt')
     for node in inference_graph_def.node:
       node.device = ''
-    with tf.gfile.GFile(inference_graph_path, 'wb') as f:
+    with tf.io.gfile.GFile(inference_graph_path, 'wb') as f:
       f.write(str(inference_graph_def))
 
   if additional_output_tensor_names is not None:

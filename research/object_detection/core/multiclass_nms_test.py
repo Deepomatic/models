@@ -15,7 +15,7 @@
 
 """Tests for tensorflow_models.object_detection.core.post_processing."""
 import numpy as np
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 from object_detection.core import post_processing
 from object_detection.core import standard_fields as fields
 from object_detection.utils import test_case

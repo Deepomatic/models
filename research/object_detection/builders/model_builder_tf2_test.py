@@ -18,7 +18,7 @@ import os
 import unittest
 
 from absl.testing import parameterized
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from google.protobuf import text_format
 from object_detection.builders import model_builder
@@ -77,7 +77,7 @@ class ModelBuilderTF2Test(
     """
     keypoint_label_map_path = os.path.join(
         self.get_temp_dir(), 'keypoint_label_map')
-    with tf.gfile.Open(keypoint_label_map_path, 'wb') as f:
+    with tf.io.gfile.Open(keypoint_label_map_path, 'wb') as f:
       f.write(keypoint_spec_text)
     return keypoint_label_map_path
 

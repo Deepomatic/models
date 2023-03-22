@@ -21,7 +21,7 @@ from __future__ import print_function
 
 from six.moves import range
 from six.moves import zip
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.meta_architectures import ssd_meta_arch
 from object_detection.models import feature_map_generators
@@ -78,7 +78,7 @@ class SSDResNetV1FpnKerasFeatureExtractor(
         params.
       inplace_batchnorm_update: whether to update batch norm moving average
         values inplace. When this is false train op must add a control
-        dependency on tf.graphkeys.UPDATE_OPS collection in order to update
+        dependency on tf.compat.v1.GraphKeys.UPDATE_OPS collection in order to update
         batch norm statistics.
       resnet_v1_base_model: base resnet v1 network to use. One of
         the resnet_v1.resnet_v1_{50,101,152} models.
@@ -283,7 +283,7 @@ class SSDResNet50V1FpnKerasFeatureExtractor(
         params.
       inplace_batchnorm_update: whether to update batch norm moving average
         values inplace. When this is false train op must add a control
-        dependency on tf.graphkeys.UPDATE_OPS collection in order to update
+        dependency on tf.compat.v1.GraphKeys.UPDATE_OPS collection in order to update
         batch norm statistics.
       fpn_min_level: the minimum level in feature pyramid networks.
       fpn_max_level: the maximum level in feature pyramid networks.
@@ -353,7 +353,7 @@ class SSDResNet101V1FpnKerasFeatureExtractor(
         params.
       inplace_batchnorm_update: whether to update batch norm moving average
         values inplace. When this is false train op must add a control
-        dependency on tf.graphkeys.UPDATE_OPS collection in order to update
+        dependency on tf.compat.v1.GraphKeys.UPDATE_OPS collection in order to update
         batch norm statistics.
       fpn_min_level: the minimum level in feature pyramid networks.
       fpn_max_level: the maximum level in feature pyramid networks.
@@ -423,7 +423,7 @@ class SSDResNet152V1FpnKerasFeatureExtractor(
         params.
       inplace_batchnorm_update: whether to update batch norm moving average
         values inplace. When this is false train op must add a control
-        dependency on tf.graphkeys.UPDATE_OPS collection in order to update
+        dependency on tf.compat.v1.GraphKeys.UPDATE_OPS collection in order to update
         batch norm statistics.
       fpn_min_level: the minimum level in feature pyramid networks.
       fpn_max_level: the maximum level in feature pyramid networks.

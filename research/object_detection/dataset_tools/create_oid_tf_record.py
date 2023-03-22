@@ -40,7 +40,7 @@ import os
 
 import contextlib2
 import pandas as pd
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.dataset_tools import oid_tfrecord_creation
 from object_detection.dataset_tools import tf_record_creation_util
@@ -82,7 +82,7 @@ def main(_):
         columns={'Confidence': 'ConfidenceImageLabel'}, inplace=True)
   else:
     all_label_annotations = None
-  all_images = tf.gfile.Glob(
+  all_images = tf.io.gfile.Glob(
       os.path.join(FLAGS.input_images_directory, '*.jpg'))
   all_image_ids = [os.path.splitext(os.path.basename(v))[0] for v in all_images]
   all_image_ids = pd.DataFrame({'ImageID': all_image_ids})
@@ -103,7 +103,7 @@ def main(_):
       image_id, image_annotations = image_data
       # In OID image file names are formed by appending ".jpg" to the image ID.
       image_path = os.path.join(FLAGS.input_images_directory, image_id + '.jpg')
-      with tf.gfile.Open(image_path) as image_file:
+      with tf.io.gfile.Open(image_path) as image_file:
         encoded_image = image_file.read()
 
       tf_example = oid_tfrecord_creation.tf_example_from_annotations_data_frame(

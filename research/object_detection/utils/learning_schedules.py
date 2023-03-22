@@ -20,7 +20,7 @@ from __future__ import print_function
 import numpy as np
 from six.moves import range
 from six.moves import zip
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 
 def _learning_rate_return_value(eager_decay_rate):

@@ -5,7 +5,7 @@ from __future__ import print_function
 
 import collections
 
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 import tf_slim as slim
 
 from tensorflow.python.training import moving_averages
@@ -55,7 +55,7 @@ class SpaghettiNet():
   def _quant_var(self,
                  name,
                  initializer_val,
-                 vars_collection=tf.GraphKeys.MOVING_AVERAGE_VARIABLES):
+                 vars_collection=tf.compat.v1.GraphKeys.MOVING_AVERAGE_VARIABLES):
     """Create an var for storing the min/max quantization range."""
     return slim.model_variable(
         name,
@@ -248,7 +248,7 @@ class SpaghettiNet():
         padding='SAME',
         scope=scope + '/1x1_before_upsample')
     if self._use_native_resize_op:
-      with tf.name_scope(scope + '/nearest_neighbor_upsampling'):
+      with tf.compat.v1.name_scope(scope + '/nearest_neighbor_upsampling'):
         input_shape = shape_utils.combined_static_and_dynamic_shape(node_pre_up)
         node_up = tf.image.resize_nearest_neighbor(
             node_pre_up,

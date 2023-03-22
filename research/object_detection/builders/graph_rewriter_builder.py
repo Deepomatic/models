@@ -14,7 +14,7 @@
 # ==============================================================================
 """Functions for quantized training and evaluation."""
 
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 import tf_slim as slim
 # pylint: disable=g-import-not-at-top
 try:

@@ -33,7 +33,7 @@ from __future__ import print_function
 
 import abc
 import six
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 from object_detection.core import box_list
 from object_detection.core import box_list_ops
 from object_detection.utils import ops
@@ -72,7 +72,7 @@ class Loss(six.with_metaclass(abc.ABCMeta, object)):
     Returns:
       loss: a tensor representing the value of the loss function.
     """
-    with tf.name_scope(scope, 'Loss',
+    with tf.compat.v1.name_scope(scope, 'Loss',
                        [prediction_tensor, target_tensor, params]) as scope:
       if ignore_nan_targets:
         target_tensor = tf.where(tf.is_nan(target_tensor),

@@ -43,7 +43,7 @@ import numpy as np
 import PIL.Image
 
 from pycocotools import mask
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.dataset_tools import tf_record_creation_util
 from object_detection.utils import dataset_util
@@ -169,7 +169,7 @@ def create_tf_example(image,
   image_id = image['id']
 
   full_path = os.path.join(image_dir, filename)
-  with tf.gfile.GFile(full_path, 'rb') as fid:
+  with tf.io.gfile.GFile(full_path, 'rb') as fid:
     encoded_jpg = fid.read()
   encoded_jpg_io = io.BytesIO(encoded_jpg)
   image = PIL.Image.open(encoded_jpg_io)
@@ -386,7 +386,7 @@ def _create_tf_record_from_coco_annotations(annotations_file, image_dir,
       at least one "person" annotation.
   """
   with contextlib2.ExitStack() as tf_record_close_stack, \
-      tf.gfile.GFile(annotations_file, 'r') as fid:
+      tf.io.gfile.GFile(annotations_file, 'r') as fid:
     output_tfrecords = tf_record_creation_util.open_sharded_output_tfrecords(
         tf_record_close_stack, output_path, num_shards)
     groundtruth_data = json.load(fid)
@@ -413,7 +413,7 @@ def _create_tf_record_from_coco_annotations(annotations_file, image_dir,
 
     keypoint_annotations_index = {}
     if keypoint_annotations_file:
-      with tf.gfile.GFile(keypoint_annotations_file, 'r') as kid:
+      with tf.io.gfile.GFile(keypoint_annotations_file, 'r') as kid:
         keypoint_groundtruth_data = json.load(kid)
       if 'annotations' in keypoint_groundtruth_data:
         for annotation in keypoint_groundtruth_data['annotations']:
@@ -424,7 +424,7 @@ def _create_tf_record_from_coco_annotations(annotations_file, image_dir,
 
     densepose_annotations_index = {}
     if densepose_annotations_file:
-      with tf.gfile.GFile(densepose_annotations_file, 'r') as fid:
+      with tf.io.gfile.GFile(densepose_annotations_file, 'r') as fid:
         densepose_groundtruth_data = json.load(fid)
       if 'annotations' in densepose_groundtruth_data:
         for annotation in densepose_groundtruth_data['annotations']:
@@ -480,8 +480,8 @@ def main(_):
   assert FLAGS.val_annotations_file, '`val_annotations_file` missing.'
   assert FLAGS.testdev_annotations_file, '`testdev_annotations_file` missing.'
 
-  if not tf.gfile.IsDirectory(FLAGS.output_dir):
-    tf.gfile.MakeDirs(FLAGS.output_dir)
+  if not tf.io.gfile.IsDirectory(FLAGS.output_dir):
+    tf.io.gfile.MakeDirs(FLAGS.output_dir)
   train_output_path = os.path.join(FLAGS.output_dir, 'coco_train.record')
   val_output_path = os.path.join(FLAGS.output_dir, 'coco_val.record')
   testdev_output_path = os.path.join(FLAGS.output_dir, 'coco_testdev.record')

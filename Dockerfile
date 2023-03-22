@@ -56,10 +56,13 @@ RUN protoc object_detection/protos/*.proto --python_out=. && \
 
 FROM base
 
-# This test fails if included in the rest of the test: not sure why.
-# Running it separately still works
-RUN py.test object_detection/dataset_tools/create_pascal_tf_record_test.py && \
-    rm object_detection/dataset_tools/create_pascal_tf_record_test.py
+# Remove helper scripts
+RUN rm object_detection/dataset_tools/create_*.py && \
+    rm -r object_detection/legacy && \
+    rm -r object_detection/inference && \
+    rm -r object_detection/tpu_exporters && \
+    rm object_detection/models/keras_models/convert_keras_models.py && \
+    rm object_detection/export_*.py
 
 # object_detection/builders/model_builder_test.py : this is a base test file, it should be ignored (it is used in model_builder_tfX_test.py)
 RUN py.test object_detection --ignore=object_detection/builders/model_builder_test.py

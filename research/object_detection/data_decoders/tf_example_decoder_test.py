@@ -17,7 +17,7 @@
 import os
 import numpy as np
 import six
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.core import standard_fields as fields
 from object_detection.data_decoders import tf_example_decoder
@@ -555,7 +555,7 @@ class TfExampleDecoderTest(test_case.TestCase):
       }
     """
     label_map_proto_file = os.path.join(self.get_temp_dir(), 'label_map.pbtxt')
-    with tf.gfile.Open(label_map_proto_file, 'wb') as f:
+    with tf.io.gfile.Open(label_map_proto_file, 'wb') as f:
       f.write(label_map_string)
 
     def graph_fn():
@@ -666,7 +666,7 @@ class TfExampleDecoderTest(test_case.TestCase):
       }
     """
     label_map_proto_file = os.path.join(self.get_temp_dir(), 'label_map.pbtxt')
-    with tf.gfile.Open(label_map_proto_file, 'wb') as f:
+    with tf.io.gfile.Open(label_map_proto_file, 'wb') as f:
       f.write(label_map_string)
 
     def graph_fn():
@@ -963,7 +963,7 @@ class TfExampleDecoderTest(test_case.TestCase):
         }
       """
       label_map_path = os.path.join(self.get_temp_dir(), 'label_map.pbtxt')
-      with tf.gfile.Open(label_map_path, 'wb') as f:
+      with tf.io.gfile.Open(label_map_path, 'wb') as f:
         f.write(label_map_string)
 
       example_decoder = tf_example_decoder.TfExampleDecoder(
@@ -1025,7 +1025,7 @@ class TfExampleDecoderTest(test_case.TestCase):
         }
       """
       label_map_path = os.path.join(self.get_temp_dir(), 'label_map.pbtxt')
-      with tf.gfile.Open(label_map_path, 'wb') as f:
+      with tf.io.gfile.Open(label_map_path, 'wb') as f:
         f.write(label_map_string)
 
       example_decoder = tf_example_decoder.TfExampleDecoder(
@@ -1066,7 +1066,7 @@ class TfExampleDecoderTest(test_case.TestCase):
         }
       """
       label_map_path = os.path.join(self.get_temp_dir(), 'label_map.pbtxt')
-      with tf.gfile.Open(label_map_path, 'wb') as f:
+      with tf.io.gfile.Open(label_map_path, 'wb') as f:
         f.write(label_map_string)
       example_decoder = tf_example_decoder.TfExampleDecoder(
           label_map_proto_file=label_map_path)
@@ -1109,7 +1109,7 @@ class TfExampleDecoderTest(test_case.TestCase):
         }
       """
       label_map_path = os.path.join(self.get_temp_dir(), 'label_map.pbtxt')
-      with tf.gfile.Open(label_map_path, 'wb') as f:
+      with tf.io.gfile.Open(label_map_path, 'wb') as f:
         f.write(label_map_string)
       example_decoder = tf_example_decoder.TfExampleDecoder(
           label_map_proto_file=label_map_path)
@@ -1158,7 +1158,7 @@ class TfExampleDecoderTest(test_case.TestCase):
         }
       """
       label_map_path = os.path.join(self.get_temp_dir(), 'label_map.pbtxt')
-      with tf.gfile.Open(label_map_path, 'wb') as f:
+      with tf.io.gfile.Open(label_map_path, 'wb') as f:
         f.write(label_map_string)
       example_decoder = tf_example_decoder.TfExampleDecoder(
           label_map_proto_file=label_map_path)
@@ -1197,7 +1197,7 @@ class TfExampleDecoderTest(test_case.TestCase):
         }
       """
       label_map_path = os.path.join(self.get_temp_dir(), 'label_map.pbtxt')
-      with tf.gfile.Open(label_map_path, 'wb') as f:
+      with tf.io.gfile.Open(label_map_path, 'wb') as f:
         f.write(label_map_string)
       example_decoder = tf_example_decoder.TfExampleDecoder(
           label_map_proto_file=label_map_path)
@@ -1668,7 +1668,7 @@ class TfExampleDecoderTest(test_case.TestCase):
         }
       """
       label_map_path = os.path.join(self.get_temp_dir(), 'label_map.pbtxt')
-      with tf.gfile.Open(label_map_path, 'wb') as f:
+      with tf.io.gfile.Open(label_map_path, 'wb') as f:
         f.write(label_map_string)
       example_decoder = tf_example_decoder.TfExampleDecoder(
           label_map_proto_file=label_map_path)
@@ -1799,7 +1799,7 @@ class TfExampleDecoderTest(test_case.TestCase):
     """
 
     label_map_path = os.path.join(self.get_temp_dir(), 'label_map.pbtxt')
-    with tf.gfile.Open(label_map_path, 'wb') as f:
+    with tf.io.gfile.Open(label_map_path, 'wb') as f:
       f.write(label_map_string)
     image_tensor = np.random.randint(256, size=(4, 5, 3)).astype(np.uint8)
     encoded_jpeg, _ = self._create_encoded_and_decoded_data(

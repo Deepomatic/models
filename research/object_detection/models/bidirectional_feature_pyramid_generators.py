@@ -474,7 +474,7 @@ class KerasBiFpnFeatureMaps(tf.keras.Model):
 
     for index, node in enumerate(self.bifpn_node_config):
       node_scope = 'node_{:02d}'.format(index)
-      with tf.name_scope(node_scope):
+      with tf.compat.v1.name_scope(node_scope):
         # Apply layer blocks to this node's input feature maps.
         input_block_results = []
         for input_index, input_block in self.node_input_blocks[index]:

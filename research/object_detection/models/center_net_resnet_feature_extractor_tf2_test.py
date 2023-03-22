@@ -15,7 +15,7 @@
 """Testing ResNet v2 models for the CenterNet meta architecture."""
 import unittest
 import numpy as np
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.models import center_net_resnet_feature_extractor
 from object_detection.utils import test_case

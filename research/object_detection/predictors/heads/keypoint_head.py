@@ -27,7 +27,7 @@ from __future__ import division
 from __future__ import print_function
 
 from six.moves import range
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 import tf_slim as slim
 
 from object_detection.predictors.heads import head

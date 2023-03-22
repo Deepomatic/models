@@ -21,7 +21,7 @@ DetectionModel.
 
 import functools
 
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 import tf_slim as slim
 
 from object_detection.builders import optimizer_builder
@@ -281,7 +281,7 @@ def train(create_tensor_dict_fn,
     # Gather initial summaries.
     # TODO(rathodv): See if summaries can be added/extracted from global tf
     # collections so that they don't have to be passed around.
-    summaries = set(tf.get_collection(tf.GraphKeys.SUMMARIES))
+    summaries = set(tf.compat.v1.get_collection(tf.compat.v1.GraphKeys.SUMMARIES))
     global_summaries = set([])
 
     model_fn = functools.partial(_create_losses,
@@ -296,7 +296,7 @@ def train(create_tensor_dict_fn,
 
     # Gather update_ops from the first clone. These contain, for example,
     # the updates for the batch_norm variables created by model_fn.
-    update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS, first_clone_scope)
+    update_ops = tf.compat.v1.get_collection(tf.compat.v1.GraphKeys.UPDATE_OPS, first_clone_scope)
 
     with tf.device(deploy_config.optimizer_device()):
       training_optimizer, optimizer_summary_vars = optimizer_builder.build(
@@ -335,7 +335,7 @@ def train(create_tensor_dict_fn,
 
       # Optionally clip gradients
       if train_config.gradient_clipping_by_norm > 0:
-        with tf.name_scope('clip_grads'):
+        with tf.compat.v1.name_scope('clip_grads'):
           grads_and_vars = slim.learning.clip_gradient_norms(
               grads_and_vars, train_config.gradient_clipping_by_norm)
 
@@ -359,7 +359,7 @@ def train(create_tensor_dict_fn,
 
     # Add the summaries from the first clone. These contain the summaries
     # created by model_fn and either optimize_clones() or _gather_clone_loss().
-    summaries |= set(tf.get_collection(tf.GraphKeys.SUMMARIES,
+    summaries |= set(tf.compat.v1.get_collection(tf.compat.v1.GraphKeys.SUMMARIES,
                                        first_clone_scope))
     summaries |= global_summaries
 

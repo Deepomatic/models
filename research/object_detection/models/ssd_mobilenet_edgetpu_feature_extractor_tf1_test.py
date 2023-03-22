@@ -14,7 +14,7 @@
 # ==============================================================================
 """Tests for ssd_mobilenet_edgetpu_feature_extractor."""
 import unittest
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.models import ssd_mobilenet_edgetpu_feature_extractor
 from object_detection.models import ssd_mobilenet_edgetpu_feature_extractor_testbase

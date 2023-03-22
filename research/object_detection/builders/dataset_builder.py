@@ -27,7 +27,7 @@ from __future__ import print_function
 
 import functools
 import math
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.builders import decoder_builder
 from object_detection.protos import input_reader_pb2
@@ -46,7 +46,7 @@ def make_initializable_iterator(dataset):
     A `tf.data.Iterator`.
   """
   iterator = dataset.make_initializable_iterator()
-  tf.add_to_collection(tf.GraphKeys.TABLE_INITIALIZERS, iterator.initializer)
+  tf.add_to_collection(tf.compat.v1.GraphKeys.TABLE_INITIALIZERS, iterator.initializer)
   return iterator
 
 
@@ -75,7 +75,7 @@ def _read_dataset_internal(file_read_func,
   Raises:
     RuntimeError: If no files are found at the supplied path(s).
   """
-  filenames = tf.gfile.Glob(input_files)
+  filenames = tf.io.gfile.Glob(input_files)
   tf.logging.info('Reading record datasets for input file: %s' % input_files)
   tf.logging.info('Number of filenames to read: %s' % len(filenames))
   if not filenames:

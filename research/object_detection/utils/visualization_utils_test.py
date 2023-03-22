@@ -25,7 +25,7 @@ import numpy as np
 import PIL.Image as Image
 import six
 from six.moves import range
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.core import standard_fields as fields
 from object_detection.utils import test_case
@@ -469,7 +469,7 @@ class VisualizationUtilsTest(test_case.TestCase):
     def graph_fn():
       values = [0.1, 0.2, 0.3, 0.4, 0.42, 0.44, 0.46, 0.48, 0.50]
       visualization_utils.add_cdf_image_summary(values, 'PositiveAnchorLoss')
-      cdf_image_summary = tf.get_collection(key=tf.GraphKeys.SUMMARIES)[0]
+      cdf_image_summary = tf.compat.v1.get_collection(key=tf.compat.v1.GraphKeys.SUMMARIES)[0]
       return cdf_image_summary
     self.execute(graph_fn, [])
 
@@ -479,7 +479,7 @@ class VisualizationUtilsTest(test_case.TestCase):
       bins = [0.01 * i for i in range(101)]
       visualization_utils.add_hist_image_summary(values, bins,
                                                  'ScoresDistribution')
-      hist_image_summary = tf.get_collection(key=tf.GraphKeys.SUMMARIES)[0]
+      hist_image_summary = tf.compat.v1.get_collection(key=tf.compat.v1.GraphKeys.SUMMARIES)[0]
       return hist_image_summary
     self.execute(graph_fn, [])
 

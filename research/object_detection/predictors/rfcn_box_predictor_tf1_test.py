@@ -16,7 +16,7 @@
 """Tests for object_detection.predictors.rfcn_box_predictor."""
 import unittest
 import numpy as np
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from google.protobuf import text_format
 from object_detection.builders import hyperparams_builder

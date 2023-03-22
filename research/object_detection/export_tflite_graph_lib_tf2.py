@@ -15,7 +15,7 @@
 """Library to export TFLite-compatible SavedModel from TF2 detection models."""
 import os
 import numpy as np
-import tensorflow.compat.v1 as tf1
+import tensorflow as tf1
 import tensorflow.compat.v2 as tf
 
 from object_detection.builders import model_builder
@@ -173,7 +173,7 @@ class SSDModule(tf.Module):
     class_predictions = score_conversion_fn(
         predicted_tensors['class_predictions_with_background'])
 
-    with tf.name_scope('raw_outputs'):
+    with tf.compat.v1.name_scope('raw_outputs'):
       # 'raw_outputs/box_encodings': a float32 tensor of shape
       #   [1, num_anchors, 4] containing the encoded box predictions. Note that
       #   these are raw predictions and no Non-Max suppression is applied on

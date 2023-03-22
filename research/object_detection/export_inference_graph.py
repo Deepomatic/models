@@ -103,7 +103,7 @@ python export_inference_graph.py \
               } \
             }"
 """
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 from google.protobuf import text_format
 from object_detection import exporter
 from object_detection.protos import pipeline_pb2
@@ -165,7 +165,7 @@ FLAGS = flags.FLAGS
 
 def main(_):
   pipeline_config = pipeline_pb2.TrainEvalPipelineConfig()
-  with tf.gfile.GFile(FLAGS.pipeline_config_path, 'r') as f:
+  with tf.io.gfile.GFile(FLAGS.pipeline_config_path, 'r') as f:
     text_format.Merge(f.read(), pipeline_config)
   text_format.Merge(FLAGS.config_override, pipeline_config)
   if FLAGS.input_shape:

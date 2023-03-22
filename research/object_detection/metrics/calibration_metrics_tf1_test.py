@@ -20,7 +20,7 @@ from __future__ import print_function
 
 import unittest
 import numpy as np
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 from object_detection.metrics import calibration_metrics
 from object_detection.utils import tf_version
 
@@ -40,7 +40,7 @@ class CalibrationLibTest(tf.test.TestCase):
     expected_ece_op, update_op = calibration_metrics.expected_calibration_error(
         y_true, y_pred, nbins=2)
     with self.test_session() as sess:
-      metrics_vars = tf.get_collection(tf.GraphKeys.METRIC_VARIABLES)
+      metrics_vars = tf.compat.v1.get_collection(tf.compat.v1.GraphKeys.METRIC_VARIABLES)
       sess.run(tf.variables_initializer(var_list=metrics_vars))
       # Bin calibration errors (|confidence - accuracy| * bin_weight):
       # - [0,0.5): |0.2 - 0.333| * (3/5) = 0.08
@@ -61,7 +61,7 @@ class CalibrationLibTest(tf.test.TestCase):
     expected_ece_op, update_op = calibration_metrics.expected_calibration_error(
         y_true, y_pred, nbins=2)
     with self.test_session() as sess:
-      metrics_vars = tf.get_collection(tf.GraphKeys.METRIC_VARIABLES)
+      metrics_vars = tf.compat.v1.get_collection(tf.compat.v1.GraphKeys.METRIC_VARIABLES)
       sess.run(tf.variables_initializer(var_list=metrics_vars))
       # Bin calibration errors (|confidence - accuracy| * bin_weight):
       # - [0,0.5): |0.2 - 0.333| * (3/5) = 0.08
@@ -82,7 +82,7 @@ class CalibrationLibTest(tf.test.TestCase):
     expected_ece_op, update_op = calibration_metrics.expected_calibration_error(
         y_true, y_pred, nbins=2)
     with self.test_session() as sess:
-      metrics_vars = tf.get_collection(tf.GraphKeys.METRIC_VARIABLES)
+      metrics_vars = tf.compat.v1.get_collection(tf.compat.v1.GraphKeys.METRIC_VARIABLES)
       sess.run(tf.variables_initializer(var_list=metrics_vars))
       # Identical data to test_expected_calibration_error_all_bins_filled,
       # except split over three batches.

@@ -16,7 +16,7 @@
 """Tests for object_detection.predictors.heads.class_head."""
 import unittest
 import numpy as np
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from google.protobuf import text_format
 from object_detection.builders import hyperparams_builder
@@ -80,7 +80,7 @@ class MaskRCNNClassHeadTest(test_case.TestCase):
           features=image_feature,
           num_predictions_per_location=1)
       actual_variable_set = set([
-          var.op.name for var in g.get_collection(tf.GraphKeys.GLOBAL_VARIABLES)
+          var.op.name for var in g.get_collection(tf.compat.v1.GraphKeys.GLOBAL_VARIABLES)
       ])
       self.assertSetEqual(expected_var_names, actual_variable_set)
 
@@ -140,7 +140,7 @@ class ConvolutionalClassPredictorTest(test_case.TestCase):
           features=image_feature,
           num_predictions_per_location=1)
       actual_variable_set = set([
-          var.op.name for var in g.get_collection(tf.GraphKeys.GLOBAL_VARIABLES)
+          var.op.name for var in g.get_collection(tf.compat.v1.GraphKeys.GLOBAL_VARIABLES)
       ])
       self.assertSetEqual(expected_var_names, actual_variable_set)
 
@@ -191,7 +191,7 @@ class WeightSharedConvolutionalClassPredictorTest(test_case.TestCase):
           features=image_feature,
           num_predictions_per_location=1)
       actual_variable_set = set([
-          var.op.name for var in g.get_collection(tf.GraphKeys.GLOBAL_VARIABLES)
+          var.op.name for var in g.get_collection(tf.compat.v1.GraphKeys.GLOBAL_VARIABLES)
       ])
       self.assertSetEqual(expected_var_names, actual_variable_set)
 

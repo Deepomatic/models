@@ -19,7 +19,7 @@ See Deep Residual Learning for Image Recognition by He et al.
 https://arxiv.org/abs/1512.03385
 """
 
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.meta_architectures import faster_rcnn_meta_arch
 from object_detection.models.keras_models import resnet_v1
@@ -116,8 +116,8 @@ class FasterRCNNResnetKerasFeatureExtractor(
           weights=None,
           include_top=False
           )
-    with tf.name_scope(name):
-      with tf.name_scope('ResnetV1'):
+    with tf.compat.v1.name_scope(name):
+      with tf.compat.v1.name_scope('ResnetV1'):
 
         conv4_last_layer = _RESNET_MODEL_CONV4_LAST_LAYERS[
             self._resnet_v1_base_model_name]
@@ -158,8 +158,8 @@ class FasterRCNNResnetKerasFeatureExtractor(
           weights=None,
           include_top=False
           )
-    with tf.name_scope(name):
-      with tf.name_scope('ResnetV1'):
+    with tf.compat.v1.name_scope(name):
+      with tf.compat.v1.name_scope('ResnetV1'):
         conv4_last_layer = _RESNET_MODEL_CONV4_LAST_LAYERS[
             self._resnet_v1_base_model_name]
         proposal_feature_maps = self.classification_backbone.get_layer(

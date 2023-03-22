@@ -30,7 +30,7 @@ import collections
 import functools
 from six.moves import range
 from six.moves import zip
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 import tf_slim as slim
 from object_detection.utils import ops
 from object_detection.utils import shape_utils
@@ -634,7 +634,7 @@ class KerasFpnTopDownFeatureMaps(tf.keras.Model):
     output_feature_maps_list = []
     output_feature_map_keys = []
 
-    with tf.name_scope(self.scope):
+    with tf.compat.v1.name_scope(self.scope):
       top_down = image_features[-1][1]
       for layer in self.top_layers:
         top_down = layer(top_down)
@@ -690,7 +690,7 @@ def fpn_top_down_feature_maps(image_features,
     feature_maps: an OrderedDict mapping keys (feature map names) to
       tensors where each tensor has shape [batch, height_i, width_i, depth_i].
   """
-  with tf.name_scope(scope, 'top_down'):
+  with tf.compat.v1.name_scope(scope, 'top_down'):
     num_levels = len(image_features)
     output_feature_maps_list = []
     output_feature_map_keys = []
@@ -711,7 +711,7 @@ def fpn_top_down_feature_maps(image_features,
 
       for level in reversed(list(range(num_levels - 1))):
         if use_native_resize_op:
-          with tf.name_scope('nearest_neighbor_upsampling'):
+          with tf.compat.v1.name_scope('nearest_neighbor_upsampling'):
             top_down_shape = shape_utils.combined_static_and_dynamic_shape(
                 top_down)
             top_down = tf.image.resize_nearest_neighbor(

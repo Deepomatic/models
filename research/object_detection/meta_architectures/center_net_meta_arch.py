@@ -21,7 +21,7 @@
 import abc
 import collections
 import functools
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 import tensorflow.compat.v2 as tf2
 
 from object_detection.core import box_list
@@ -4849,7 +4849,7 @@ class CenterNetMetaArch(model.DetectionModel):
                          'which does not support updates()')
     else:
       update_ops = []
-      slim_update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+      slim_update_ops = tf.compat.v1.get_collection(tf.compat.v1.GraphKeys.UPDATE_OPS)
       # Copy the slim ops to avoid modifying the collection
       if slim_update_ops:
         update_ops.extend(slim_update_ops)

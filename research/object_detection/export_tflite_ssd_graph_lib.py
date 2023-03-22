@@ -19,7 +19,7 @@ See export_tflite_ssd_graph.py for usage.
 import os
 import tempfile
 import numpy as np
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 from tensorflow.core.framework import attr_value_pb2
 from tensorflow.core.framework import types_pb2
 from tensorflow.core.protobuf import saver_pb2
@@ -193,7 +193,7 @@ def export_tflite_graph(pipeline_config,
     ValueError: if the pipeline config contains models other than ssd or uses an
       fixed_shape_resizer and provides a shape as well.
   """
-  tf.gfile.MakeDirs(output_dir)
+  tf.io.gfile.MakeDirs(output_dir)
   if pipeline_config.model.WhichOneof('model') != 'ssd':
     raise ValueError('Only ssd models are supported in tflite. '
                      'Found {} in config'.format(
@@ -249,7 +249,7 @@ def export_tflite_graph(pipeline_config,
   class_predictions = score_conversion_fn(
       predicted_tensors['class_predictions_with_background'])
 
-  with tf.name_scope('raw_outputs'):
+  with tf.compat.v1.name_scope('raw_outputs'):
     # 'raw_outputs/box_encodings': a float32 tensor of shape [1, num_anchors, 4]
     #  containing the encoded box predictions. Note that these are raw
     #  predictions and no Non-Max suppression is applied on them and
@@ -326,8 +326,8 @@ def export_tflite_graph(pipeline_config,
     transformed_graph_def = frozen_graph_def
 
   binary_graph = os.path.join(output_dir, binary_graph_name)
-  with tf.gfile.GFile(binary_graph, 'wb') as f:
+  with tf.io.gfile.GFile(binary_graph, 'wb') as f:
     f.write(transformed_graph_def.SerializeToString())
   txt_graph = os.path.join(output_dir, txt_graph_name)
-  with tf.gfile.GFile(txt_graph, 'w') as f:
+  with tf.io.gfile.GFile(txt_graph, 'w') as f:
     f.write(str(transformed_graph_def))

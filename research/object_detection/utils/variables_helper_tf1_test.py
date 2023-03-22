@@ -21,7 +21,7 @@ from __future__ import print_function
 
 import os
 import unittest
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.utils import test_case
 from object_detection.utils import tf_version

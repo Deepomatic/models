@@ -15,7 +15,7 @@
 """Helper functions for SSD models meta architecture tests."""
 
 import functools
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 from google.protobuf import text_format
 
 from object_detection.builders import post_processing_builder
@@ -73,7 +73,7 @@ class FakeSSDKerasFeatureExtractor(ssd_meta_arch.SSDKerasFeatureExtractor):
   """Fake keras based ssd feature extracture for ssd meta arch tests."""
 
   def __init__(self):
-    with tf.name_scope('mock_model'):
+    with tf.compat.v1.name_scope('mock_model'):
       super(FakeSSDKerasFeatureExtractor, self).__init__(
           is_training=True,
           depth_multiplier=0,
@@ -90,7 +90,7 @@ class FakeSSDKerasFeatureExtractor(ssd_meta_arch.SSDKerasFeatureExtractor):
     return tf.identity(resized_inputs)
 
   def _extract_features(self, preprocessed_inputs, **kwargs):
-    with tf.name_scope('mock_model'):
+    with tf.compat.v1.name_scope('mock_model'):
       return [self._conv(preprocessed_inputs)]
 
 

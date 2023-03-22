@@ -28,7 +28,7 @@ import os
 
 import numpy as np
 import scipy.io
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.utils import shape_utils
 
@@ -57,7 +57,7 @@ def scale(dp_surface_coords, y_scale, x_scale, scope=None):
   Returns:
     new_dp_surface_coords: a tensor of shape [num_instances, num_points, 4]
   """
-  with tf.name_scope(scope, 'DensePoseScale'):
+  with tf.compat.v1.name_scope(scope, 'DensePoseScale'):
     y_scale = tf.cast(y_scale, tf.float32)
     x_scale = tf.cast(x_scale, tf.float32)
     new_keypoints = dp_surface_coords * [[[y_scale, x_scale, 1, 1]]]
@@ -79,7 +79,7 @@ def clip_to_window(dp_surface_coords, window, scope=None):
   Returns:
     new_dp_surface_coords: a tensor of shape [num_instances, num_points, 4].
   """
-  with tf.name_scope(scope, 'DensePoseClipToWindow'):
+  with tf.compat.v1.name_scope(scope, 'DensePoseClipToWindow'):
     y, x, v, u = tf.split(value=dp_surface_coords, num_or_size_splits=4, axis=2)
     win_y_min, win_x_min, win_y_max, win_x_max = tf.unstack(window)
     y = tf.maximum(tf.minimum(y, win_y_max), win_y_min)
@@ -120,7 +120,7 @@ def prune_outside_window(dp_num_points, dp_part_ids, dp_surface_coords, window,
     new_dp_surface_coords: a tensor of shape [num_instances, num_points, 4] with
       DensePose surface coordinates after pruning.
   """
-  with tf.name_scope(scope, 'DensePosePruneOutsideWindow'):
+  with tf.compat.v1.name_scope(scope, 'DensePosePruneOutsideWindow'):
     y, x, _, _ = tf.unstack(dp_surface_coords, axis=-1)
     win_y_min, win_x_min, win_y_max, win_x_max = tf.unstack(window)
 
@@ -181,7 +181,7 @@ def change_coordinate_frame(dp_surface_coords, window, scope=None):
   Returns:
     new_dp_surface_coords: a tensor of shape [num_instances, num_points, 4].
   """
-  with tf.name_scope(scope, 'DensePoseChangeCoordinateFrame'):
+  with tf.compat.v1.name_scope(scope, 'DensePoseChangeCoordinateFrame'):
     win_height = window[2] - window[0]
     win_width = window[3] - window[1]
     new_dp_surface_coords = scale(
@@ -210,7 +210,7 @@ def to_normalized_coordinates(dp_surface_coords, height, width,
     A tensor of shape [num_instances, num_points, 4] with normalized
     coordinates.
   """
-  with tf.name_scope(scope, 'DensePoseToNormalizedCoordinates'):
+  with tf.compat.v1.name_scope(scope, 'DensePoseToNormalizedCoordinates'):
     height = tf.cast(height, tf.float32)
     width = tf.cast(width, tf.float32)
 
@@ -243,7 +243,7 @@ def to_absolute_coordinates(dp_surface_coords, height, width,
   Returns:
     A tensor of shape [num_instances, num_points, 4] with absolute coordinates.
   """
-  with tf.name_scope(scope, 'DensePoseToAbsoluteCoordinates'):
+  with tf.compat.v1.name_scope(scope, 'DensePoseToAbsoluteCoordinates'):
     height = tf.cast(height, tf.float32)
     width = tf.cast(width, tf.float32)
 
@@ -366,7 +366,7 @@ def flip_horizontal(dp_part_ids, dp_surface_coords, scope=None):
     new_dp_surface_coords: a tensor of shape [num_instances, num_points, 4] with
       DensePose surface coordinates after flipping.
   """
-  with tf.name_scope(scope, 'DensePoseFlipHorizontal'):
+  with tf.compat.v1.name_scope(scope, 'DensePoseFlipHorizontal'):
     # First flip x coordinate.
     y, x, vu = tf.split(dp_surface_coords, num_or_size_splits=[1, 1, 2], axis=2)
     xflipped = 1.0 - x

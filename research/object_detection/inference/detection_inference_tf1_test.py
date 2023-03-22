@@ -19,7 +19,7 @@ import unittest
 import numpy as np
 from PIL import Image
 import six
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 from google.protobuf import text_format
 
 from object_detection.core import standard_fields
@@ -71,7 +71,7 @@ def create_mock_graph():
         name='detection_classes')
     graph_def = g.as_graph_def()
 
-  with tf.gfile.Open(get_mock_graph_path(), 'w') as fl:
+  with tf.io.gfile.Open(get_mock_graph_path(), 'w') as fl:
     fl.write(graph_def.SerializeToString())
 
 

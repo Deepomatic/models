@@ -18,7 +18,7 @@
 """
 
 
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.meta_architectures.center_net_meta_arch import CenterNetFeatureExtractor
 

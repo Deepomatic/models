@@ -69,7 +69,7 @@ from absl import logging
 import cv2
 from six.moves import range
 from six.moves import urllib
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.dataset_tools import seq_example_util
 from object_detection.utils import dataset_util

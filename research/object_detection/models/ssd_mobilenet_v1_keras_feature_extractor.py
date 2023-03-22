@@ -15,7 +15,7 @@
 
 """SSDFeatureExtractor for Keras MobilenetV1 features."""
 
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.meta_architectures import ssd_meta_arch
 from object_detection.models import feature_map_generators
@@ -58,7 +58,7 @@ class SSDMobileNetV1KerasFeatureExtractor(
         params.
       inplace_batchnorm_update: Whether to update batch norm moving average
         values inplace. When this is false train op must add a control
-        dependency on tf.graphkeys.UPDATE_OPS collection in order to update
+        dependency on tf.compat.v1.GraphKeys.UPDATE_OPS collection in order to update
         batch norm statistics.
       use_explicit_padding: Use 'VALID' padding for convolutions, but prepad
         inputs so that the output dimensions are the same as if 'SAME' padding

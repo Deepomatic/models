@@ -15,7 +15,7 @@
 """Utility functions for detection inference."""
 from __future__ import division
 
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.core import standard_fields
 
@@ -65,7 +65,7 @@ def build_inference_graph(image_tensor, inference_graph_path):
     detected_labels_tensor: Detected labels. Int64 tensor,
         shape=[num_detections]
   """
-  with tf.gfile.Open(inference_graph_path, 'rb') as graph_def_file:
+  with tf.io.gfile.Open(inference_graph_path, 'rb') as graph_def_file:
     graph_content = graph_def_file.read()
   graph_def = tf.GraphDef()
   graph_def.MergeFromString(graph_content)

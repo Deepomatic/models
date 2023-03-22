@@ -14,7 +14,7 @@
 # ==============================================================================
 """Tests for ssd resnet v1 feature extractors."""
 import unittest
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.models import ssd_resnet_v1_ppn_feature_extractor
 from object_detection.models import ssd_resnet_v1_ppn_feature_extractor_testbase

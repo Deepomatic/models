@@ -30,7 +30,7 @@ It also ensures the length of output of the subsample is always batch_size, even
 when number of examples set to True in indicator is less than batch_size.
 """
 
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.core import minibatch_sampler
 
@@ -231,7 +231,7 @@ class BalancedPositiveNegativeSampler(minibatch_sampler.MinibatchSampler):
     if indicator.dtype != tf.bool:
       raise ValueError('indicator should be of type bool. Received: %s' %
                        indicator.dtype)
-    with tf.name_scope(scope, 'BalancedPositiveNegativeSampler'):
+    with tf.compat.v1.name_scope(scope, 'BalancedPositiveNegativeSampler'):
       if self._is_static:
         return self._static_subsample(indicator, batch_size, labels)
 

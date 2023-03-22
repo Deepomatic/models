@@ -20,7 +20,7 @@ from __future__ import print_function
 
 import numpy as np
 import six
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.dataset_tools import seq_example_util
 from object_detection.utils import tf_version

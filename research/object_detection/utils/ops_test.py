@@ -23,7 +23,7 @@ from absl.testing import parameterized
 import numpy as np
 import six
 from six.moves import range
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 import tf_slim as slim
 from object_detection.core import standard_fields as fields
 from object_detection.utils import ops

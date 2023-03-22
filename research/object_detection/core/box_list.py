@@ -34,7 +34,7 @@ Some other notes:
   * Tensors are always provided as (flat) [N, 4] tensors.
 """
 
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.utils import shape_utils
 
@@ -167,7 +167,7 @@ class BoxList(object):
     Returns:
       a list of 4 1-D tensors [ycenter, xcenter, height, width].
     """
-    with tf.name_scope(scope, 'get_center_coordinates_and_sizes'):
+    with tf.compat.v1.name_scope(scope, 'get_center_coordinates_and_sizes'):
       box_corners = self.get()
       ymin, xmin, ymax, xmax = tf.unstack(tf.transpose(box_corners))
       width = xmax - xmin
@@ -182,7 +182,7 @@ class BoxList(object):
     Args:
       scope: name scope of the function.
     """
-    with tf.name_scope(scope, 'transpose_coordinates'):
+    with tf.compat.v1.name_scope(scope, 'transpose_coordinates'):
       y_min, x_min, y_max, x_max = tf.split(
           value=self.get(), num_or_size_splits=4, axis=1)
       self.set(tf.concat([x_min, y_min, x_max, y_max], 1))

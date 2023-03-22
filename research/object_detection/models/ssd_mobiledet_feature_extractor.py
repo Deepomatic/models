@@ -16,7 +16,7 @@
 
 import functools
 import numpy as np
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 import tf_slim as slim
 
 from object_detection.meta_architectures import ssd_meta_arch
@@ -36,7 +36,7 @@ def _scale_filters(filters, multiplier, base=8):
 
 
 def _swish6(h):
-  with tf.name_scope('swish6'):
+  with tf.compat.v1.name_scope('swish6'):
     return h * tf.nn.relu6(h + np.float32(3)) * np.float32(1. / 6.)
 
 

@@ -14,7 +14,7 @@
 # ==============================================================================
 """Tests for ssd_spaghettinet_feature_extractor."""
 import unittest
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.models import ssd_feature_extractor_test
 from object_detection.models import ssd_spaghettinet_feature_extractor

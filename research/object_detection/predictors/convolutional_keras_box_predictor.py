@@ -21,7 +21,7 @@ from __future__ import print_function
 import collections
 
 from six.moves import range
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.core import box_predictor
 from object_detection.utils import shape_utils
@@ -97,7 +97,7 @@ class ConvolutionalBoxPredictor(box_predictor.KerasBoxPredictor):
         params.
       inplace_batchnorm_update: Whether to update batch norm moving average
         values inplace. When this is false train op must add a control
-        dependency on tf.graphkeys.UPDATE_OPS collection in order to update
+        dependency on tf.compat.v1.GraphKeys.UPDATE_OPS collection in order to update
         batch norm statistics.
       name: A string name scope to assign to the model. If `None`, Keras
         will auto-generate one from the class name.
@@ -260,7 +260,7 @@ class WeightSharedConvolutionalBoxPredictor(box_predictor.KerasBoxPredictor):
         params.
       inplace_batchnorm_update: Whether to update batch norm moving average
         values inplace. When this is false train op must add a control
-        dependency on tf.graphkeys.UPDATE_OPS collection in order to update
+        dependency on tf.compat.v1.GraphKeys.UPDATE_OPS collection in order to update
         batch norm statistics.
       kernel_size: Size of final convolution kernel.
       apply_batch_norm: Whether to apply batch normalization to conv layers in

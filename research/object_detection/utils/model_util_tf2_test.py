@@ -20,7 +20,7 @@ from __future__ import division
 from __future__ import print_function
 
 import unittest
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.utils import model_util
 from object_detection.utils import tf_version

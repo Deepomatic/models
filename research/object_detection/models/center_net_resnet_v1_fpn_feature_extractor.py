@@ -18,7 +18,7 @@
 [1]: https://arxiv.org/abs/1612.03144.
 [2]: https://arxiv.org/abs/1904.07850.
 """
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.meta_architectures.center_net_meta_arch import CenterNetFeatureExtractor
 from object_detection.models.keras_models import resnet_v1

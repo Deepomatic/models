@@ -18,13 +18,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 from six.moves import zip
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
+from tensorflow.compat.v1.app import flags
 from tensorflow.python import tf2  # pylint: disable=import-outside-toplevel
 from object_detection.utils import tf_version
 if not tf2.enabled():
   from tensorflow.contrib import tpu as contrib_tpu  # pylint: disable=g-import-not-at-top, line-too-long
-
-flags = tf.app.flags
 
 flags.DEFINE_bool('tpu_test', False, 'Deprecated Flag.')
 FLAGS = flags.FLAGS

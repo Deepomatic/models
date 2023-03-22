@@ -21,7 +21,7 @@ import os
 import unittest
 import numpy as np
 import six
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 from google.protobuf import text_format
 from tensorflow.python.framework import dtypes
 from tensorflow.python.ops import array_ops
@@ -150,7 +150,7 @@ class ExportInferenceGraphTest(tf.test.TestCase):
     od_graph = tf.Graph()
     with od_graph.as_default():
       od_graph_def = tf.GraphDef()
-      with tf.gfile.GFile(inference_graph_path, mode='rb') as fid:
+      with tf.io.gfile.GFile(inference_graph_path, mode='rb') as fid:
         if is_binary:
           od_graph_def.ParseFromString(fid.read())
         else:
@@ -726,7 +726,7 @@ class ExportInferenceGraphTest(tf.test.TestCase):
     output_directory = os.path.join(tmp_dir, 'output')
     inference_graph_path = os.path.join(output_directory,
                                         'frozen_inference_graph.pb')
-    tf.gfile.MakeDirs(output_directory)
+    tf.io.gfile.MakeDirs(output_directory)
     with mock.patch.object(
         model_builder, 'build', autospec=True) as mock_builder:
       mock_builder.return_value = FakeModel(
@@ -802,7 +802,7 @@ class ExportInferenceGraphTest(tf.test.TestCase):
       self.assertTrue(os.path.exists(expected_pipeline_path))
 
       written_pipeline_config = pipeline_pb2.TrainEvalPipelineConfig()
-      with tf.gfile.GFile(expected_pipeline_path, 'r') as f:
+      with tf.io.gfile.GFile(expected_pipeline_path, 'r') as f:
         proto_str = f.read()
         text_format.Merge(proto_str, written_pipeline_config)
         self.assertProtoEquals(pipeline_config, written_pipeline_config)
@@ -879,7 +879,7 @@ class ExportInferenceGraphTest(tf.test.TestCase):
                                           use_moving_averages=False)
     output_directory = os.path.join(tmp_dir, 'output')
     saved_model_path = os.path.join(output_directory, 'saved_model')
-    tf.gfile.MakeDirs(output_directory)
+    tf.io.gfile.MakeDirs(output_directory)
     with mock.patch.object(
         model_builder, 'build', autospec=True) as mock_builder:
       mock_builder.return_value = FakeModel(
@@ -1012,7 +1012,7 @@ class ExportInferenceGraphTest(tf.test.TestCase):
     output_directory = os.path.join(tmp_dir, 'output')
     model_path = os.path.join(output_directory, 'model.ckpt')
     meta_graph_path = model_path + '.meta'
-    tf.gfile.MakeDirs(output_directory)
+    tf.io.gfile.MakeDirs(output_directory)
     with mock.patch.object(
         model_builder, 'build', autospec=True) as mock_builder:
       mock_builder.return_value = FakeModel(
@@ -1167,14 +1167,14 @@ class ExportInferenceGraphTest(tf.test.TestCase):
   def test_rewrite_nn_resize_op_multiple_path(self):
     g = tf.Graph()
     with g.as_default():
-      with tf.name_scope('nearest_upsampling'):
+      with tf.compat.v1.name_scope('nearest_upsampling'):
         x_1 = array_ops.placeholder(dtypes.float32, shape=(8, 10, 10, 8))
         x_1_stack_1 = tf.stack([x_1] * 2, axis=3)
         x_1_reshape_1 = tf.reshape(x_1_stack_1, [8, 10, 20, 8])
         x_1_stack_2 = tf.stack([x_1_reshape_1] * 2, axis=2)
         x_1_reshape_2 = tf.reshape(x_1_stack_2, [8, 20, 20, 8])
 
-      with tf.name_scope('nearest_upsampling'):
+      with tf.compat.v1.name_scope('nearest_upsampling'):
         x_2 = array_ops.placeholder(dtypes.float32, shape=(8, 10, 10, 8))
         x_2_stack_1 = tf.stack([x_2] * 2, axis=3)
         x_2_reshape_1 = tf.reshape(x_2_stack_1, [8, 10, 20, 8])

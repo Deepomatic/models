@@ -24,7 +24,7 @@ import logging
 import numpy as np
 from six import string_types
 from six.moves import range
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 from google.protobuf import text_format
 from object_detection.protos import string_int_label_map_pb2
 

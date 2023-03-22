@@ -20,7 +20,7 @@ import os
 import unittest
 import numpy as np
 import six
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 import tf_slim as slim
 
 from tensorflow.core.framework import types_pb2
@@ -116,7 +116,7 @@ class ExportTfliteGraphTest(tf.test.TestCase):
         saver.save(sess, checkpoint_path)
 
   def _assert_quant_vars_exists(self, tflite_graph_file):
-    with tf.gfile.Open(tflite_graph_file, mode='rb') as f:
+    with tf.io.gfile.Open(tflite_graph_file, mode='rb') as f:
       graph_string = f.read()
       print(graph_string)
       self.assertIn(six.ensure_binary('quant'), graph_string)
@@ -126,7 +126,7 @@ class ExportTfliteGraphTest(tf.test.TestCase):
     graph = tf.Graph()
     with graph.as_default():
       graph_def = tf.GraphDef()
-      with tf.gfile.Open(tflite_graph_file, mode='rb') as f:
+      with tf.io.gfile.Open(tflite_graph_file, mode='rb') as f:
         graph_def.ParseFromString(f.read())
       tf.import_graph_def(graph_def, name='')
       input_tensor = graph.get_tensor_by_name('normalized_input_image_tensor:0')
@@ -341,7 +341,7 @@ class ExportTfliteGraphTest(tf.test.TestCase):
     graph = tf.Graph()
     with graph.as_default():
       graph_def = tf.GraphDef()
-      with tf.gfile.Open(tflite_graph_file, mode='rb') as f:
+      with tf.io.gfile.Open(tflite_graph_file, mode='rb') as f:
         graph_def.ParseFromString(f.read())
       all_op_names = [node.name for node in graph_def.node]
       self.assertIn('TFLite_Detection_PostProcess', all_op_names)
@@ -373,7 +373,7 @@ class ExportTfliteGraphTest(tf.test.TestCase):
     graph = tf.Graph()
     with graph.as_default():
       graph_def = tf.GraphDef()
-      with tf.gfile.Open(tflite_graph_file, mode='rb') as f:
+      with tf.io.gfile.Open(tflite_graph_file, mode='rb') as f:
         graph_def.ParseFromString(f.read())
       all_op_names = [node.name for node in graph_def.node]
       self.assertIn('UnattachedTensor', all_op_names)
@@ -392,7 +392,7 @@ class ExportTfliteGraphTest(tf.test.TestCase):
     graph = tf.Graph()
     with graph.as_default():
       graph_def = tf.GraphDef()
-      with tf.gfile.Open(tflite_graph_file, mode='rb') as f:
+      with tf.io.gfile.Open(tflite_graph_file, mode='rb') as f:
         graph_def.ParseFromString(f.read())
       all_op_names = [node.name for node in graph_def.node]
       self.assertIn('TFLite_Detection_PostProcess', all_op_names)

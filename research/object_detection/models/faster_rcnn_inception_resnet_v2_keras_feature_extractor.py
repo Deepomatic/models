@@ -25,7 +25,7 @@ Huang et al. (https://arxiv.org/abs/1611.10012)
 # Skip pylint for this file because it times out
 # pylint: skip-file
 
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.meta_architectures import faster_rcnn_meta_arch
 from object_detection.models.keras_models import inception_resnet_v2
@@ -104,8 +104,8 @@ class FasterRCNNInceptionResnetV2KerasFeatureExtractor(
               weight_decay=self._weight_decay,
               weights=None,
               include_top=False)
-    with tf.name_scope(name):
-      with tf.name_scope('InceptionResnetV2'):
+    with tf.compat.v1.name_scope(name):
+      with tf.compat.v1.name_scope('InceptionResnetV2'):
         proposal_features = self.classification_backbone.get_layer(
             name='block17_20_ac').output
         keras_model = tf.keras.Model(
@@ -142,8 +142,8 @@ class FasterRCNNInceptionResnetV2KerasFeatureExtractor(
               weight_decay=self._weight_decay,
               weights=None,
               include_top=False)
-    with tf.name_scope(name):
-      with tf.name_scope('InceptionResnetV2'):
+    with tf.compat.v1.name_scope(name):
+      with tf.compat.v1.name_scope('InceptionResnetV2'):
         proposal_feature_maps = self.classification_backbone.get_layer(
             name='block17_20_ac').output
         proposal_classifier_features = self.classification_backbone.get_layer(

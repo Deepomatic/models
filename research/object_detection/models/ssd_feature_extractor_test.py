@@ -23,7 +23,7 @@ from abc import abstractmethod
 
 import numpy as np
 from six.moves import zip
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 import tf_slim as slim
 from google.protobuf import text_format
 
@@ -260,4 +260,4 @@ class SsdFeatureExtractorTestBase(test_case.TestCase):
           preprocessed_inputs,
           feature_extractor,
           use_keras=use_keras)
-      return g.get_collection(tf.GraphKeys.GLOBAL_VARIABLES)
+      return g.get_collection(tf.compat.v1.GraphKeys.GLOBAL_VARIABLES)

@@ -36,7 +36,7 @@ import PIL.ImageFont as ImageFont
 import six
 from six.moves import range
 from six.moves import zip
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.core import keypoint_ops
 from object_detection.core import standard_fields as fields
@@ -107,7 +107,7 @@ def save_image_array_as_png(image, output_path):
     output_path: path to which image should be written.
   """
   image_pil = Image.fromarray(np.uint8(image)).convert('RGB')
-  with tf.gfile.Open(output_path, 'w') as fid:
+  with tf.io.gfile.Open(output_path, 'w') as fid:
     image_pil.save(fid, 'PNG')
 
 
