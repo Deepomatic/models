@@ -53,8 +53,8 @@ class ExportSavedModelTPUTest(tf.test.TestCase, parameterized.TestCase):
 
     input_placeholder_name = 'placeholder_tensor'
     export_dir = os.path.join(FLAGS.test_tmpdir, 'tpu_saved_model')
-    if tf.gfile.Exists(export_dir):
-      tf.gfile.DeleteRecursively(export_dir)
+    if tf.io.gfile.Exists(export_dir):
+      tf.io.gfile.DeleteRecursively(export_dir)
     ckpt_path = None
     export_saved_model_tpu_lib.export(pipeline_config_file, ckpt_path,
                                       export_dir, input_placeholder_name,

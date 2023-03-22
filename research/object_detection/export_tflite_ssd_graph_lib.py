@@ -193,7 +193,7 @@ def export_tflite_graph(pipeline_config,
     ValueError: if the pipeline config contains models other than ssd or uses an
       fixed_shape_resizer and provides a shape as well.
   """
-  tf.gfile.MakeDirs(output_dir)
+  tf.io.gfile.MakeDirs(output_dir)
   if pipeline_config.model.WhichOneof('model') != 'ssd':
     raise ValueError('Only ssd models are supported in tflite. '
                      'Found {} in config'.format(
@@ -326,8 +326,8 @@ def export_tflite_graph(pipeline_config,
     transformed_graph_def = frozen_graph_def
 
   binary_graph = os.path.join(output_dir, binary_graph_name)
-  with tf.gfile.GFile(binary_graph, 'wb') as f:
+  with tf.io.gfile.GFile(binary_graph, 'wb') as f:
     f.write(transformed_graph_def.SerializeToString())
   txt_graph = os.path.join(output_dir, txt_graph_name)
-  with tf.gfile.GFile(txt_graph, 'w') as f:
+  with tf.io.gfile.GFile(txt_graph, 'w') as f:
     f.write(str(transformed_graph_def))

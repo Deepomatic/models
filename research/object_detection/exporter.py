@@ -501,7 +501,7 @@ def _export_inference_graph(input_type,
                             side_input_names=None,
                             side_input_types=None):
   """Export helper."""
-  tf.gfile.MakeDirs(output_directory)
+  tf.io.gfile.MakeDirs(output_directory)
   frozen_graph_path = os.path.join(output_directory,
                                    'frozen_inference_graph.pb')
   saved_model_path = os.path.join(output_directory, 'saved_model')
@@ -549,7 +549,7 @@ def _export_inference_graph(input_type,
                                         'inference_graph.pbtxt')
     for node in inference_graph_def.node:
       node.device = ''
-    with tf.gfile.GFile(inference_graph_path, 'wb') as f:
+    with tf.io.gfile.GFile(inference_graph_path, 'wb') as f:
       f.write(str(inference_graph_def))
 
   if additional_output_tensor_names is not None:

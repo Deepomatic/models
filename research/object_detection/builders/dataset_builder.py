@@ -75,7 +75,7 @@ def _read_dataset_internal(file_read_func,
   Raises:
     RuntimeError: If no files are found at the supplied path(s).
   """
-  filenames = tf.gfile.Glob(input_files)
+  filenames = tf.io.gfile.Glob(input_files)
   tf.logging.info('Reading record datasets for input file: %s' % input_files)
   tf.logging.info('Number of filenames to read: %s' % len(filenames))
   if not filenames:

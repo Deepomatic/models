@@ -504,14 +504,14 @@ class ReadDatasetTest(test_case.TestCase):
 
     for i in range(5):
       path = self._path_template % i
-      with tf.gfile.Open(path, 'wb') as f:
+      with tf.io.gfile.Open(path, 'wb') as f:
         f.write('\n'.join([str(i + 1), str((i + 1) * 10)]))
 
     self._shuffle_path_template = os.path.join(self.get_temp_dir(),
                                                'shuffle_%s.txt')
     for i in range(2):
       path = self._shuffle_path_template % i
-      with tf.gfile.Open(path, 'wb') as f:
+      with tf.io.gfile.Open(path, 'wb') as f:
         f.write('\n'.join([str(i)] * 5))
 
     super(ReadDatasetTest, self).setUp()

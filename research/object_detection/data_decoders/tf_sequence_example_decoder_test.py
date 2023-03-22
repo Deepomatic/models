@@ -45,7 +45,7 @@ class TfSequenceExampleDecoderTest(test_case.TestCase):
         id: 4
       }
     """
-    with tf.gfile.Open(path, 'wb') as f:
+    with tf.io.gfile.Open(path, 'wb') as f:
       f.write(label_map_text)
 
   def _make_random_serialized_jpeg_images(self, num_frames, image_height,

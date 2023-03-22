@@ -46,7 +46,7 @@ except ImportError:
 def _write_config(config, config_path):
   """Writes a config object to disk."""
   config_text = text_format.MessageToString(config)
-  with tf.gfile.Open(config_path, "wb") as f:
+  with tf.io.gfile.Open(config_path, "wb") as f:
     f.write(config_text)
 
 

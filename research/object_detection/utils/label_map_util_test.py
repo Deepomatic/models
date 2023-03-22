@@ -67,7 +67,7 @@ class LabelMapUtilTest(tf.test.TestCase):
       }
     """
     label_map_path = os.path.join(self.get_temp_dir(), 'label_map.pbtxt')
-    with tf.gfile.Open(label_map_path, 'wb') as f:
+    with tf.io.gfile.Open(label_map_path, 'wb') as f:
       f.write(label_map_string)
 
     label_map_dict = label_map_util.get_label_map_dict(label_map_path)
@@ -104,7 +104,7 @@ class LabelMapUtilTest(tf.test.TestCase):
       }
     """
     label_map_path = os.path.join(self.get_temp_dir(), 'label_map.pbtxt')
-    with tf.gfile.Open(label_map_path, 'wb') as f:
+    with tf.io.gfile.Open(label_map_path, 'wb') as f:
       f.write(label_map_string)
 
     label_map_dict = label_map_util.get_keypoint_label_map_dict(label_map_path)
@@ -143,7 +143,7 @@ class LabelMapUtilTest(tf.test.TestCase):
       }
     """
     label_map_path = os.path.join(self.get_temp_dir(), 'label_map.pbtxt')
-    with tf.gfile.Open(label_map_path, 'wb') as f:
+    with tf.io.gfile.Open(label_map_path, 'wb') as f:
       f.write(label_map_string)
 
     with self.assertRaises(ValueError):
@@ -179,7 +179,7 @@ class LabelMapUtilTest(tf.test.TestCase):
       }
     """
     label_map_path = os.path.join(self.get_temp_dir(), 'label_map.pbtxt')
-    with tf.gfile.Open(label_map_path, 'wb') as f:
+    with tf.io.gfile.Open(label_map_path, 'wb') as f:
       f.write(label_map_string)
 
     label_map_dict = label_map_util.get_label_map_dict(
@@ -203,7 +203,7 @@ class LabelMapUtilTest(tf.test.TestCase):
       }
     """
     label_map_path = os.path.join(self.get_temp_dir(), 'label_map.pbtxt')
-    with tf.gfile.Open(label_map_path, 'wb') as f:
+    with tf.io.gfile.Open(label_map_path, 'wb') as f:
       f.write(label_map_string)
 
     with self.assertRaises(ValueError):
@@ -225,7 +225,7 @@ class LabelMapUtilTest(tf.test.TestCase):
       }
     """
     label_map_path = os.path.join(self.get_temp_dir(), 'label_map.pbtxt')
-    with tf.gfile.Open(label_map_path, 'wb') as f:
+    with tf.io.gfile.Open(label_map_path, 'wb') as f:
       f.write(label_map_string)
 
     label_map_dict = label_map_util.get_label_map_dict(label_map_path)
@@ -245,7 +245,7 @@ class LabelMapUtilTest(tf.test.TestCase):
       }
     """
     label_map_path = os.path.join(self.get_temp_dir(), 'label_map.pbtxt')
-    with tf.gfile.Open(label_map_path, 'wb') as f:
+    with tf.io.gfile.Open(label_map_path, 'wb') as f:
       f.write(label_map_string)
 
     label_map_dict = label_map_util.get_label_map_dict(
@@ -459,7 +459,7 @@ class LabelMapUtilTest(tf.test.TestCase):
       }
     """
     label_map_path = os.path.join(self.get_temp_dir(), 'label_map.pbtxt')
-    with tf.gfile.Open(label_map_path, 'wb') as f:
+    with tf.io.gfile.Open(label_map_path, 'wb') as f:
       f.write(label_map_string)
 
     categories = label_map_util.create_categories_from_labelmap(label_map_path)
@@ -483,7 +483,7 @@ class LabelMapUtilTest(tf.test.TestCase):
       }
     """
     label_map_path = os.path.join(self.get_temp_dir(), 'label_map.pbtxt')
-    with tf.gfile.Open(label_map_path, 'wb') as f:
+    with tf.io.gfile.Open(label_map_path, 'wb') as f:
       f.write(label_map_string)
 
     category_index = label_map_util.create_category_index_from_labelmap(
@@ -513,7 +513,7 @@ class LabelMapUtilTest(tf.test.TestCase):
       }
     """
     label_map_path = os.path.join(self.get_temp_dir(), 'label_map.pbtxt')
-    with tf.gfile.Open(label_map_path, 'wb') as f:
+    with tf.io.gfile.Open(label_map_path, 'wb') as f:
       f.write(label_map_string)
 
     self.assertDictEqual({

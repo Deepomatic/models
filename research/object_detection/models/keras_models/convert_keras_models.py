@@ -63,7 +63,7 @@ def main(_):
   model = init_model(FLAGS.model)
 
   path = os.path.join(FLAGS.output_path, FLAGS.model)
-  tf.gfile.MakeDirs(path)
+  tf.io.gfile.MakeDirs(path)
   weights_path = os.path.join(path, 'weights')
   ckpt = tf.train.Checkpoint(feature_extractor=model)
   saved_path = ckpt.save(weights_path)
