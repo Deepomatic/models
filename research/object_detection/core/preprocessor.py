@@ -3268,7 +3268,7 @@ def resize_pad_to_multiple(image, masks=None, multiple=1):
     return result
 
 def resize_keep_one_dimension(image,
-                              fixed_height,
+                              height,
                               max_width,
                               method=tf.image.ResizeMethod.BILINEAR,
                               pad_value=(0, 0, 0)):
@@ -3289,12 +3289,14 @@ def resize_keep_one_dimension(image,
     if len(image.get_shape()) != 3:
       raise ValueError('Image should be 3D tensor')
 
-    with tf.name_scope('ResizeKeepOneDimension', values=[image, fixed_height]):
+    with tf.name_scope('ResizeKeepOneDimension', values=[image, height]):
       image_height, image_width, _ = _get_image_info(image)
       target_ratio = tf.cast(image_width, dtype=tf.float32) / tf.cast(image_height, dtype=tf.float32)
-      new_width = tf.cast(fixed_height * target_ratio, dtype=tf.int32)
+      new_width = tf.cast(height * target_ratio, dtype=tf.int32)
 
-      resized_image = tf.image.resize(image, [fixed_height, new_width], method=method)
+      new_width = tf.minimum(new_width, max_width)
+
+      resized_image = tf.image.resize(image, [height, new_width], method=method)
       channels = tf.unstack(resized_image, axis=2)
 
       if len(channels) != len(pad_value):
