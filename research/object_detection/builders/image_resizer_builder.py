@@ -92,6 +92,16 @@ def build(image_resizer_config):
         per_channel_pad_value=per_channel_pad_value)
     if not keep_aspect_ratio_config.convert_to_grayscale:
       return image_resizer_fn
+  elif image_resizer_oneof == 'keep_one_dimension_resizer':
+    keep_one_dimension_config = image_resizer_config.keep_one_dimension_resizer
+    method = _tf_resize_method(keep_one_dimension_config.resize_method)
+    image_resizer_fn = functools.partial(
+        preprocessor.resize_keep_one_dimension,
+        height=keep_one_dimension_config.height,
+        max_width=keep_one_dimension_config.max_width,
+        method=method)
+    if not keep_one_dimension_config.convert_to_grayscale:
+      return image_resizer_fn
   elif image_resizer_oneof == 'fixed_shape_resizer':
     fixed_shape_resizer_config = image_resizer_config.fixed_shape_resizer
     method = _tf_resize_method(fixed_shape_resizer_config.resize_method)

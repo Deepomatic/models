@@ -238,6 +238,19 @@ class ImageResizerBuilderTest(test_case.TestCase):
     with self.assertRaises(ValueError):
       image_resizer_builder.build(image_resizer_text_proto)
 
+  def test_build_keep_one_dimension_resizer_returns_expected_shape(self):
+    image_resizer_text_proto = """
+      keep_one_dimension_resizer {
+        height: 200
+        max_width: 2048
+      }
+    """
+    input_shape = (100, 300, 3)
+    expected_output_shape = (200, 2048, 3)
+    output_shape = self._shape_of_resized_random_image_given_text_proto(
+        input_shape, image_resizer_text_proto)
+    self.assertEqual(output_shape, expected_output_shape)
+
 
 if __name__ == '__main__':
   tf.test.main()

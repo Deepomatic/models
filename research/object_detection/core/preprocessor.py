@@ -3267,6 +3267,39 @@ def resize_pad_to_multiple(image, masks=None, multiple=1):
     result.append(tf.stack([image_height, image_width, num_channels]))
     return result
 
+def resize_keep_one_dimension(image,
+                              height,
+                              max_width,
+                              method=tf.image.ResizeMethod.BILINEAR,
+                              pad_value=(0, 0, 0)):
+    """Resize an image to have a fixed height and pad to max_width width if necessary.
+
+    Args:
+      image: A 3D tensor of shape [height, width, channels].
+      fixed_height: The desired fixed height for the resized image.
+      max_width: The maximum width for the resized image.
+      pad_value: A tuple of per-channel scalar values to use for padding.
+        Default is (0, 0, 0) which represents black pixels.
+
+    Returns:
+      resized_image: A tensor of shape [fixed_height, new_width, channels],
+        where the image has been resized while maintaining the aspect ratio
+        and padded if necessary.
+    """
+    if len(image.get_shape()) != 3:
+      raise ValueError('Image should be 3D tensor')
+
+    with tf.name_scope('ResizeKeepOneDimension', values=[image, height]):
+      image_height, image_width, _ = _get_image_info(image)
+      target_ratio = tf.cast(image_width, dtype=tf.float32) / tf.cast(image_height, dtype=tf.float32)
+      new_width = tf.cast(height * target_ratio, dtype=tf.int32)
+
+      new_width = tf.minimum(new_width, max_width)
+
+      resized_image = tf.image.resize(image, [height, new_width], method=method)
+      resized_image = tf.image.pad_to_bounding_box(resized_image, 0, 0, height, max_width)
+
+      return resized_image
 
 def scale_boxes_to_pixel_coordinates(image, boxes, keypoints=None):
   """Scales boxes from normalized to pixel coordinates.
