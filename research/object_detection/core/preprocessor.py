@@ -3302,12 +3302,15 @@ def resize_keep_one_dimension(image,
       if len(channels) != len(pad_value):
           raise ValueError('Number of channels must be equal to the length of pad value.')
 
-      resized_image = tf.stack([
-          tf.pad(channels[i], [[0, 0], [0, max_width - new_width]], constant_values=pad_value[i])
-          for i in range(len(channels))
-      ], axis=2)
+      def pad_channel(i):
+            channel = channels[i]
+            pad_width = [[0, 0], [0, max_width - new_width]]
+            pad_value_channel = tf.cast(pad_value[i], channel.dtype)
+            return tf.pad(channel, pad_width, constant_values=pad_value_channel)
 
-      return resized_image
+      resized_image = tf.map_fn(pad_channel, tf.range(len(channels)), dtype=resized_image.dtype)
+
+      return tf.stack(resized_image, axis=2)
 
 def scale_boxes_to_pixel_coordinates(image, boxes, keypoints=None):
   """Scales boxes from normalized to pixel coordinates.
