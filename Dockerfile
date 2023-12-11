@@ -43,9 +43,6 @@ RUN cd /tmp && \
 ADD ./requirements.txt /tmp/requirements.txt
 RUN pip install -r /tmp/requirements.txt && pip install --no-deps lvis==0.5.3
 
-# Dependency for tests
-RUN pip install apache_beam==2.45.0
-
 ADD . /app
 WORKDIR /app/research
 
