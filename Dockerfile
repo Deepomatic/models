@@ -27,10 +27,10 @@ RUN apt update && \
     apt-get install -y --no-install-recommends \
         python3-lxml g++ make && \
     pip --no-cache-dir install --upgrade \
-        pip==23.0.1 \
+        pip==23.3.1 \
         setuptools \
         wheel && \
-    pip install pytest==7.2.1 pip-tools==6.12.3 && \
+    pip install pytest==7.2.1 pip-tools==7.3.0 && \
     rm -rf /var/lib/apt/lists/* /tmp/*
 
 # Install protobuf
