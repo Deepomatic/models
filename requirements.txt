@@ -80,7 +80,7 @@ fonttools==4.46.0
     # via matplotlib
 fsspec==2023.12.1
     # via etils
-gast==0.5.4
+gast==0.4.0
     # via tensorflow
 gin-config==0.5.0
     # via tf-models-official
@@ -138,7 +138,7 @@ jsonschema-specifications==2023.11.2
     # via jsonschema
 kaggle==1.5.16
     # via tf-models-official
-keras==2.14.0
+keras==2.13.1
     # via tensorflow
 kiwisolver==1.4.5
     # via matplotlib
@@ -155,9 +155,7 @@ matplotlib==3.8.2
     #   -r requirements.in
     #   pycocotools
     #   tf-models-official
-ml-dtypes==0.2.0
-    # via tensorflow
-numpy==1.24.4
+numpy==1.24.3
     # via
     #   -r requirements.in
     #   apache-beam
@@ -165,7 +163,6 @@ numpy==1.24.4
     #   etils
     #   h5py
     #   matplotlib
-    #   ml-dtypes
     #   opencv-python-headless
     #   opt-einsum
     #   pandas
@@ -181,34 +178,6 @@ numpy==1.24.4
     #   tensorflow-hub
     #   tensorflow-model-optimization
     #   tf-models-official
-nvidia-cublas-cu11==11.11.3.6
-    # via
-    #   nvidia-cudnn-cu11
-    #   nvidia-cusolver-cu11
-    #   tensorflow
-    #   tensorrt
-nvidia-cuda-cupti-cu11==11.8.87
-    # via tensorflow
-nvidia-cuda-nvcc-cu11==11.8.89
-    # via tensorflow
-nvidia-cuda-runtime-cu11==11.8.89
-    # via
-    #   tensorflow
-    #   tensorrt
-nvidia-cudnn-cu11==8.7.0.84
-    # via
-    #   tensorflow
-    #   tensorrt
-nvidia-cufft-cu11==10.9.0.58
-    # via tensorflow
-nvidia-curand-cu11==10.3.0.86
-    # via tensorflow
-nvidia-cusolver-cu11==11.4.1.48
-    # via tensorflow
-nvidia-cusparse-cu11==11.7.5.86
-    # via tensorflow
-nvidia-nccl-cu11==2.16.5
-    # via tensorflow
 oauth2client==4.1.3
     # via tf-models-official
 oauthlib==3.2.2
@@ -357,17 +326,16 @@ six==1.16.0
     #   oauth2client
     #   promise
     #   python-dateutil
-    #   tensorboard
     #   tensorflow
     #   tensorflow-model-optimization
     #   tf-models-official
 tabulate==0.9.0
     # via sacrebleu
-tensorboard==2.14.1
+tensorboard==2.13.0
     # via tensorflow
 tensorboard-data-server==0.7.2
     # via tensorboard
-tensorflow[and-cuda]==2.14.1
+tensorflow[and-cuda]==2.13.1
     # via
     #   -r requirements-limits.in
     #   -r requirements.in
@@ -378,7 +346,7 @@ tensorflow-addons==0.23.0
     # via -r requirements.in
 tensorflow-datasets==4.9.3
     # via tf-models-official
-tensorflow-estimator==2.14.0
+tensorflow-estimator==2.13.0
     # via tensorflow
 tensorflow-hub==0.15.0
     # via
@@ -394,17 +362,15 @@ tensorflow-metadata==1.14.0
     # via tensorflow-datasets
 tensorflow-model-optimization==0.7.5
     # via tf-models-official
-tensorflow-text==2.14.0
+tensorflow-text==2.13.0
     # via tf-models-official
-tensorrt==8.5.3.1
-    # via tensorflow
 termcolor==2.4.0
     # via
     #   tensorflow
     #   tensorflow-datasets
 text-unidecode==1.3
     # via python-slugify
-tf-models-official==2.14.2
+tf-models-official==2.13.2
     # via
     #   -r requirements-limits.in
     #   -r requirements.in
@@ -423,7 +389,7 @@ tqdm==4.66.1
     #   tensorflow-datasets
 typeguard==2.13.3
     # via tensorflow-addons
-typing-extensions==4.9.0
+typing-extensions==4.5.0
     # via
     #   apache-beam
     #   etils
@@ -443,7 +409,9 @@ webencodings==0.5.1
 werkzeug==3.0.1
     # via tensorboard
 wheel==0.42.0
-    # via astunparse
+    # via
+    #   astunparse
+    #   tensorboard
 wrapt==1.14.1
     # via
     #   tensorflow

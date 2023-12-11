@@ -1,8 +1,8 @@
 # Here we use >= to allow Thoth to use a later TF version
 # Modify this versions in requirements-limits.txt which is
 # used to force installation of aligned version of TF and tf-models-official
-tensorflow[and-cuda]~=2.14.0
-tf-models-official~=2.14.0
+tensorflow[and-cuda]~=2.13.0
+tf-models-official~=2.13.0
 
 Pillow>=1.0
 Matplotlib>=2.1

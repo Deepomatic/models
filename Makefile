@@ -11,4 +11,4 @@ build-base:
 	docker build -t tf-models --target base .
 
 build:
-	docker build -t tf-models .
+	docker build -t tf-models-tests .
