@@ -9,7 +9,7 @@ with open(os.path.join(os.path.dirname(__file__), '..', 'requirements.in'), 'r')
 
 setup(
     name='object_detection',
-    version='2.9',
+    version='2.13',
     install_requires=requirements,
     include_package_data=True,
     packages=[p for p in find_packages() if p.startswith('object_detection')],

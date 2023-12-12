@@ -5,10 +5,10 @@ all: build-base
 
 # Bump requirements
 bump: build-base
-	docker run -v ${ROOT_DIR}:/app -w /app -ti tf-models pip-compile -v requirements.in
+	docker run -v ${ROOT_DIR}:/app -w /app -ti tf-models bash -c "pip install --upgrade pip pip-tools && pip-compile -v requirements.in requirements-limits.in requirements-tests.in --output-file requirements.txt"
 
 build-base:
 	docker build -t tf-models --target base .
 
 build:
-	docker build -t tf-models .
+	docker build -t tf-models-tests .
