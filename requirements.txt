@@ -335,11 +335,10 @@ tensorboard==2.13.0
     # via tensorflow
 tensorboard-data-server==0.7.2
     # via tensorboard
-tensorflow[and-cuda]==2.13.1
+tensorflow==2.13.1
     # via
     #   -r requirements-limits.in
     #   -r requirements.in
-    #   tensorflow
     #   tensorflow-text
     #   tf-models-official
 tensorflow-addons==0.23.0
