@@ -42,7 +42,7 @@ RUN cd /tmp && \
 
 ADD ./requirements.txt /tmp/requirements.txt
 RUN pip install -r /tmp/requirements.txt
-RUN pip install --no-deps lvis==0.5.3  # lvis is unmaintened, we should remove it from dependancies
+RUN pip install --no-deps lvis==0.5.3  # lvis is unmaintened, we should remove it from dependencies
 
 ADD . /app
 WORKDIR /app/research
